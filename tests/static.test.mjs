@@ -5,10 +5,10 @@ import fs from 'node:fs';
 const index = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const pkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const app = fs.readFileSync(new URL('../app.js', import.meta.url), 'utf8');
-const runtime = fs.readFileSync(new URL('../app-v0.0.5.js', import.meta.url), 'utf8');
+const runtime = fs.readFileSync(new URL('../app-v0.0.6.js', import.meta.url), 'utf8');
 
-test('release metadata is aligned to v0.0.5', () => {
-  assert.equal(pkg.version, '0.0.5');
+test('release metadata is aligned to v0.0.6', () => {
+  assert.equal(pkg.version, '0.0.6');
   assert.match(index, /3D City Response Simulator — v0\.0\.5/);
   assert.match(index, /validation\.js\?v=0\.0\.5/);
   assert.match(index, /app\.js\?v=0\.0\.5/);
@@ -49,5 +49,16 @@ test('mobile driving HUD keeps the road-ahead view open', () => {
   assert.doesNotMatch(index, /id="mobile-camera"/);
   assert.match(index, /id="mobile-brake"/);
   assert.match(index, /id="mobile-recenter"[^>]*>CENTER<\/button>/);
-  assert.match(index, /features-v0\.0\.5\.css\?v=0\.0\.5/);
+  assert.match(index, /features-v0\.0\.6\.css\?v=0\.0\.6/);
+});
+
+
+test('mobile long-press copy gestures are disabled only on driving surfaces', () => {
+  const css = fs.readFileSync(new URL('../features-v0.0.6.css', import.meta.url), 'utf8');
+  assert.match(css, /-webkit-touch-callout:\s*none/);
+  assert.match(css, /user-select:\s*none/);
+  assert.match(css, /touch-action:\s*none/);
+  assert.match(runtime, /contextmenu[\s\S]*preventDefault/);
+  assert.match(runtime, /selectstart[\s\S]*preventDefault/);
+  assert.doesNotMatch(css, /#setup-overlay[^\{]*\{[^\}]*user-select:\s*none/);
 });
