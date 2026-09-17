@@ -14,14 +14,12 @@ const idle = () => ({ speed: 0, steering: 0, heading: 0 });
 function simulate(seconds, hz, input, onRoad = true, initial = idle()) {
   let state = { ...initial };
   const dt = 1 / hz;
-  for (let t = 0; t < seconds - 1e-9; t += dt) {
-    state = stepTruckKinematics(state, input, dt, onRoad);
-  }
+  for (let t = 0; t < seconds - 1e-9; t += dt) state = stepTruckKinematics(state, input, dt, onRoad);
   return state;
 }
 
 test('version is current validation demo release', () => {
-  assert.equal(VERSION, '0.0.3');
+  assert.equal(VERSION, '0.0.4');
 });
 
 test('forward throttle accelerates but respects apparatus top speed', () => {
@@ -37,11 +35,7 @@ test('reverse throttle respects reverse cap', () => {
 });
 
 test('service brake stops a moving truck quickly without reversing it', () => {
-  const braking = simulate(3, 60, { throttle: 0, steer: 0, brake: 1 }, true, {
-    speed: 15,
-    steering: 0,
-    heading: 0,
-  });
+  const braking = simulate(3, 60, { throttle: 0, steer: 0, brake: 1 }, true, { speed: 15, steering: 0, heading: 0 });
   assert.ok(Math.abs(braking.speed) < 0.01);
 });
 
