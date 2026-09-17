@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#071019">
   <meta name="description" content="Google Photorealistic 3D Tiles emergency vehicle driving proof of concept.">
-  <title>3D City Response Simulator — v0.0.2</title>
+  <title>3D City Response Simulator — v0.0.3</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/Widgets/widgets.css">
-  <link rel="stylesheet" href="./styles.css?v=0.0.2">
+  <link rel="stylesheet" href="./styles.css?v=0.0.3">
 </head>
 <body>
   <main id="app-shell">
@@ -20,7 +20,7 @@
         <h1>3D City Response Simulator</h1>
       </div>
       <div class="topbar-actions">
-        <span id="version-pill" class="pill">v0.0.2</span>
+        <span id="version-pill" class="pill">v0.0.3</span>
         <button id="setup-button" class="icon-button" type="button" aria-label="Open simulator setup">⚙</button>
       </div>
     </header>
@@ -84,12 +84,12 @@
       <form id="setup-form" class="setup-card" autocomplete="off">
         <div class="setup-heading">
           <div>
-            <p class="eyebrow">VERSION 0.0.2 · PETERBOROUGH DEMO</p>
+            <p class="eyebrow">VERSION 0.0.3 · PETERBOROUGH DEMO</p>
             <h2>Google 3D Driving Test</h2>
           </div>
           <span class="prototype-badge">Prototype</span>
         </div>
-        <p class="setup-copy">This test streams Google Photorealistic 3D Tiles through CesiumJS, then runs your own fire-truck physics and road intelligence on top. Version 0.0.2 adds a structured validation report for the Codex handoff.</p>
+        <p class="setup-copy">Drive a rescue pumper through Google’s photorealistic Peterborough. Start at a fire station, explore the streets, and use Diagnostics to report your drive.</p>
 
         <label for="api-key">Google Maps Platform API key</label>
         <input id="api-key" name="apiKey" type="password" inputmode="text" placeholder="Paste a Map Tiles API key" required>
@@ -114,6 +114,7 @@
 
         <div id="setup-error" class="setup-error" role="alert" hidden></div>
         <button id="launch-button" class="primary-button" type="submit">Launch 3D Demo</button>
+        <button id="resume-button" class="primary-button resume-button" type="button" hidden>Resume driving</button>
         <div class="setup-links">
           <a href="https://console.cloud.google.com/google/maps-apis/api-list" target="_blank" rel="noopener noreferrer">Google Cloud API setup ↗</a>
           <a href="https://developers.google.com/maps/documentation/tile/3d-tiles" target="_blank" rel="noopener noreferrer">3D Tiles documentation ↗</a>
@@ -122,6 +123,7 @@
       </form>
     </section>
   </main>
+  <a class="road-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Roads © OpenStreetMap contributors</a>
 
   <script>window.CESIUM_BASE_URL = 'https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/';</script>
   <script src="https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/Cesium.js"></script>
@@ -132,14 +134,10 @@
       if (Cesium.RequestScheduler?.requestsByServer) {
         Cesium.RequestScheduler.requestsByServer['tile.googleapis.com:443'] = 18;
       }
-      const originalCreateGoogleTileset = Cesium.createGooglePhotorealistic3DTileset;
-      if (typeof originalCreateGoogleTileset === 'function') {
-        Cesium.createGooglePhotorealistic3DTileset = (apiOptions, tilesetOptions = {}) =>
-          originalCreateGoogleTileset(apiOptions, { ...tilesetOptions, showCreditsOnScreen: true });
-      }
+      window.GOOGLE_TILESET_OPTIONS = Object.freeze({ showCreditsOnScreen: true });
     })();
   </script>
-  <script type="module" src="./app.js?v=0.0.2"></script>
-  <script src="./validation.js?v=0.0.2"></script>
+  <script type="module" src="./app.js?v=0.0.3"></script>
+  <script src="./validation.js?v=0.0.3"></script>
 </body>
 </html>

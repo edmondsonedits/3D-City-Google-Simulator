@@ -26,6 +26,18 @@ jobs:
           node-version: '22'
       - name: Run vehicle physics tests
         run: npm test
+      - name: Install browser tests
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run real-renderer fixture tests (not Google validation)
+        run: npm run test:browser
+      - name: Save browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-evidence
+          path: artifacts/
 
   deploy:
     needs: test

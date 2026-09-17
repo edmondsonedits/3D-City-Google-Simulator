@@ -28,6 +28,10 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .cesium-viewer, .cesium-viewer-cesiumWidgetContainer, .cesium-widget, .cesium-widget canvas { width: 100%; height: 100%; }
 .cesium-viewer-bottom { left: auto; right: 8px; bottom: 4px; }
 .cesium-credit-textContainer, .cesium-credit-logoContainer { opacity: .95; }
+.road-attribution { position: absolute; right: 8px; bottom: 3px; z-index: 21; font-size: 9px; color: #c6d0d7; background: #071019cc; }
+.cesium-widget-credits { padding-bottom: 16px; max-width: calc(100vw - 16px); background: #07101999; }
+.resume-button { margin-top: 10px; background: #244c60; }
+.resume-button[hidden] { display: none; }
 
 .glass {
   background: var(--panel);
@@ -131,7 +135,7 @@ kbd { border: 1px solid rgba(255,255,255,.22); border-bottom-width: 2px; border-
 .diagnostics-toggle {
   position: absolute;
   right: 12px;
-  top: 148px;
+  top: 178px;
   z-index: 12;
   color: var(--muted);
   border-radius: 12px;
@@ -141,11 +145,14 @@ kbd { border: 1px solid rgba(255,255,255,.22); border-bottom-width: 2px; border-
 .diagnostics-panel {
   position: absolute;
   right: 12px;
-  top: 190px;
+  top: 220px;
   z-index: 14;
   width: min(340px, calc(100vw - 24px));
   border-radius: 16px;
   padding: 14px;
+  max-height: calc(100dvh - 240px);
+  overflow-y: auto;
+  touch-action: pan-y;
 }
 .panel-title { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 9px; }
 .panel-title button { border: 0; background: none; color: var(--muted); font-size: 22px; }
@@ -161,7 +168,7 @@ kbd { border: 1px solid rgba(255,255,255,.22); border-bottom-width: 2px; border-
   inset: 0;
   z-index: 40;
   display: grid;
-  place-items: center;
+  place-items: safe center;
   padding: 18px;
   background: radial-gradient(circle at 50% 34%, rgba(32,65,86,.75), rgba(5,11,17,.94) 58%);
   overflow: auto;
@@ -245,4 +252,11 @@ kbd { border: 1px solid rgba(255,255,255,.22); border-bottom-width: 2px; border-
   .joystick-ring { width: 102px; height: 102px; }
   .mobile-controls { bottom: 4px; }
   .drive-hud { bottom: 8px; }
+}
+
+/* Keep the controls above the renderer's required credit strip. */
+.drive-hud { bottom: max(44px, calc(env(safe-area-inset-bottom) + 30px)); }
+.desktop-hint { bottom: 44px; }
+@media (max-width: 900px), (pointer: coarse) {
+  .mobile-controls { bottom: max(38px, calc(env(safe-area-inset-bottom) + 28px)); }
 }

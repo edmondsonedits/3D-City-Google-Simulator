@@ -1,8 +1,12 @@
-# Codex Handoff — 3D City Google Simulator v0.0.2
+# Codex Handoff — 3D City Google Simulator v0.0.3
+
+## v0.0.3 takeover update
+
+Read RELEASE_REPORT.md and AUDIT.md for measured evidence and remaining validation gates. Assets are now bundled locally (ASSETS.md); the read-only runtime snapshot feeds validation. Surface filtering remains visual-only and still lacks independent elevation/deck data. The original Google integration wrapper was ineffective against read-only exports; credits are now passed directly. No real-key Google drive has been certified. The sections below retain the original long-term boundaries; baseline deployment and external-asset limitations are superseded by this release report.
 
 ## Mission
 
-Turn this proof of concept into a production-quality **firefighter/EMS street-knowledge training simulator** only after the v0.0.2 driving demo proves that Google Photorealistic 3D Tiles are a convincing and usable visual city layer.
+Turn this proof of concept into a production-quality **firefighter/EMS street-knowledge training simulator** only after the v0.0.3 driving demo proves that Google Photorealistic 3D Tiles are a convincing and usable visual city layer.
 
 The central architecture must remain:
 
@@ -13,7 +17,7 @@ Independent simulator data      = training/driving truth
 
 Do not rebuild the product as a thin Google viewer. The commercial value must remain in the simulator: vehicle behaviour, dispatch training, road/street intelligence, route analysis, scoring, training history, instructor tools, and future knowledge modelling.
 
-## Current v0.0.2 proof of concept
+## Current v0.0.3 proof of concept
 
 The current build contains:
 
@@ -38,7 +42,7 @@ The current build contains:
 Preserve these unless current Google documentation explicitly requires a different implementation:
 
 1. Google 3D content is a streamed visualization layer. Do not download, rehost, redistribute, extract, trace, or convert Google's mesh/textures into simulator-owned assets.
-2. Keep required Google tile/data attribution visibly rendered. v0.0.2 forces `showCreditsOnScreen: true` when the Google tileset is created.
+2. Keep required Google tile/data attribution visibly rendered. v0.0.3 forces `showCreditsOnScreen: true` when the Google tileset is created.
 3. Do not turn this into live operational emergency navigation. Product scope is training/simulation.
 4. Keep routing, street matching, dispatch locations, scoring, and training state based on independently sourced/owned data.
 5. Do not commit Google API keys to GitHub.
@@ -46,7 +50,7 @@ Preserve these unless current Google documentation explicitly requires a differe
 
 ## Validation gate before major expansion
 
-The user should run v0.0.2 first. Open Diagnostics and complete the built-in automatic checks:
+The user should run v0.0.3 first. Open Diagnostics and complete the built-in automatic checks:
 
 - Google Photorealistic 3D Tiles connect/stream.
 - Independent road graph loads.
@@ -221,7 +225,7 @@ Suggested per-street/intersection fields:
 
 ## Performance direction
 
-Google's current renderer guidance recommends increasing tile request concurrency; v0.0.2 sets `Cesium.RequestScheduler.requestsByServer['tile.googleapis.com:443'] = 18`.
+Google's current renderer guidance recommends increasing tile request concurrency; v0.0.3 sets `Cesium.RequestScheduler.requestsByServer['tile.googleapis.com:443'] = 18`.
 
 Keep quality selectable. Add future adaptive quality that reduces decorative/visual cost before degrading road/training accuracy.
 

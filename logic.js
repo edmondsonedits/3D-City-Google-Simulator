@@ -1,4 +1,4 @@
-export const VERSION = '0.0.2';
+export const VERSION = '0.0.3';
 
 export const TRUCK = Object.freeze({
   length: 10.4,
@@ -18,7 +18,7 @@ export const TRUCK = Object.freeze({
   offroadReverseSpeed: 4.85,
   offroadAccelMultiplier: 0.7,
   offroadDrag: 1.2,
-  chaseDistance: 14,
+  chaseDistance: 22,
   chasePitch: -0.34,
 });
 
@@ -117,4 +117,21 @@ export function angleDifference(a, b) {
 export function roadHeadingDifference(vehicleHeading, segmentHeading) {
   const direct = angleDifference(vehicleHeading, segmentHeading);
   return Math.min(direct, Math.abs(Math.PI - direct));
+}
+
+/** Substep low-FPS frames; cap long stalls so resuming cannot teleport the truck. */
+export function advanceVehicle(vehicle, input, elapsed, onRoad) {
+  let remaining = clamp(Number(elapsed) || 0, 0, 0.25);
+  let next = { ...vehicle };
+  while (remaining > 1e-9) {
+    const dt = Math.min(remaining, 1 / 120);
+    next = { ...next, ...stepTruckKinematics(next, input, dt, onRoad) };
+    Object.assign(next, moveLatLon(next.lat, next.lon, next.heading, next.speed, dt));
+    remaining -= dt;
+  }
+  return next;
+}
+
+export function roadAllowsFullSpeed(hasRoadData, match, distanceFromSpawn) {
+  return Boolean(hasRoadData && (distanceFromSpawn < 65 || (match && match.distance <= 16)));
 }

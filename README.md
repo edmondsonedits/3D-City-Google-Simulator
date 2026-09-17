@@ -1,10 +1,20 @@
-# 3D City Google Simulator — v0.0.2
+# 3D City Google Simulator — v0.0.3
 
 A focused proof of concept for a future commercial firefighter/EMS street-knowledge simulator. The demo streams **Google Photorealistic 3D Tiles** through **CesiumJS**, then layers independent vehicle physics, road matching, controls, and training-oriented UI over the visual city.
 
+## Play v0.0.3
+
+Open https://edmondsonedits.github.io/3D-City-Google-Simulator/ and enter your own Map Tiles API key. Choose Station 1 and launch. The key needs billing, Map Tiles API access, and website restrictions allowing that address. No Google key ships with the game.
+
+Locally, run `npm start` and open http://127.0.0.1:4173/. Allow that address in your key restrictions. Desktop: W/S, A/D, Space, C. Mobile: joystick, Brake, Recenter. Setup pauses the drive; Resume returns without rebuilding the city.
+
+This release corrects truck orientation, chase-camera placement, direct Google credit configuration, low-FPS integration, truck self-sampling, stale surface requests, off-road classification, mobile touch release/recenter and validation false positives. It bundles the existing independent roads and pumper. See [AUDIT.md](AUDIT.md), [ASSETS.md](ASSETS.md) and [RELEASE_REPORT.md](RELEASE_REPORT.md).
+
+The Google driving milestone is **awaiting real-key visual validation**. Automated browser tests use real Cesium, the real model and road graph with a synthetic surface/tileset fixture. They do not validate Google's city, bridge decks, grounding or FPS.
+
 ## What this demo is proving
 
-The goal is not to build the full simulator yet. Version 0.0.2 is intended to answer the expensive technical questions before a larger Codex build:
+The goal is not to build the full simulator yet. Version 0.0.3 is intended to answer the expensive technical questions before a larger Codex build:
 
 - Can Google Photorealistic 3D Tiles provide a convincing street-level city environment?
 - Can the existing rescue-pumper asset be driven through that streamed world?
@@ -32,9 +42,9 @@ The goal is not to build the full simulator yet. Version 0.0.2 is intended to an
 - One-click validation report intended to be pasted into Codex after the test drive
 - Regression and static configuration tests
 
-## v0.0.2 validation additions
+## v0.0.3 validation additions
 
-Version 0.0.2 adds a structured pre-Codex test pass. Open **Diagnostics** after launching the city and:
+Version 0.0.3 adds a structured pre-Codex test pass. Open **Diagnostics** after launching the city and:
 
 1. Let nearby Google 3D detail settle.
 2. Confirm the road graph and surface height lock.
@@ -108,14 +118,14 @@ Google's mesh is deliberately **not** the authoritative road network. Independen
 
 ## Existing project data reused
 
-The proof of concept currently references these existing resources from `edmondsonedits/Peterborough-Map-Game`:
+The proof of concept bundles these existing resources from `edmondsonedits/Peterborough-Map-Game`:
 
 - `city-explorer/assets/vehicles/generic-pumper.glb`
 - `city-explorer/data/osm-public-roads.geojson`
 - Peterborough fire-station spawn coordinates
 - established heavy-truck physics tuning
 
-For the larger build, Codex should move critical runtime assets/data into this repository or a defined city-pack pipeline so the new simulator is not dependent on another project's raw GitHub paths.
+These files are now bundled locally at a pinned source revision. See ASSETS.md for provenance and OSM attribution.
 
 ## Testing
 
@@ -129,7 +139,7 @@ Tests cover vehicle physics, braking, off-road limits, steering direction, frame
 
 `.github/workflows/demo-pages.yml` tests the build and deploys the static site to GitHub Pages on pushes to `main`.
 
-This repository was created with GitHub Pages disabled. One manual repository setting is still required:
+If configuring a fresh copy of the repository, enable:
 
 **Settings → Pages → Build and deployment → Source → GitHub Actions**
 
