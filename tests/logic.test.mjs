@@ -19,7 +19,7 @@ function simulate(seconds, hz, input, onRoad = true, initial = idle()) {
 }
 
 test('version is current validation demo release', () => {
-  assert.equal(VERSION, '0.0.5');
+  assert.equal(VERSION, '0.0.6');
 });
 
 test('forward throttle accelerates but respects apparatus top speed', () => {
