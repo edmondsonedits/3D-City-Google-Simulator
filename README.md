@@ -1,8 +1,8 @@
-# 3D City Google Simulator — v0.0.3
+# 3D City Google Simulator — v0.0.6
 
 A focused proof of concept for a future commercial firefighter/EMS street-knowledge simulator. The demo streams **Google Photorealistic 3D Tiles** through **CesiumJS**, then layers independent vehicle physics, road matching, controls, and training-oriented UI over the visual city.
 
-## Play v0.0.3
+## Play v0.0.6
 
 Open https://edmondsonedits.github.io/3D-City-Google-Simulator/ and enter your own Map Tiles API key. Choose Station 1 and launch. The key needs billing, Map Tiles API access, and website restrictions allowing that address. No Google key ships with the game.
 
@@ -11,6 +11,10 @@ Locally, run `npm start` and open http://127.0.0.1:4173/. Allow that address in 
 This release corrects truck orientation, chase-camera placement, direct Google credit configuration, low-FPS integration, truck self-sampling, stale surface requests, off-road classification, mobile touch release/recenter and validation false positives. It bundles the existing independent roads and pumper. See [AUDIT.md](AUDIT.md), [ASSETS.md](ASSETS.md) and [RELEASE_REPORT.md](RELEASE_REPORT.md).
 
 The Google driving milestone is **awaiting real-key visual validation**. Automated browser tests use real Cesium, the real model and road graph with a synthetic surface/tileset fixture. They do not validate Google's city, bridge decks, grounding or FPS.
+
+## v0.0.6 mobile long-press fix
+
+Mobile driving surfaces now suppress browser text selection, copy callouts, drag-start behavior, and touch gestures that conflict with holding the joystick or dragging the 3D view. The protection is scoped to gameplay surfaces so API-key and Ontario city inputs in setup remain selectable and editable.
 
 ## v0.0.5 mobile HUD
 
