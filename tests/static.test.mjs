@@ -9,10 +9,10 @@ const runtime = fs.readFileSync(new URL('../app-v0.0.6.js', import.meta.url), 'u
 
 test('release metadata is aligned to v0.0.6', () => {
   assert.equal(pkg.version, '0.0.6');
-  assert.match(index, /3D City Response Simulator — v0\.0\.5/);
-  assert.match(index, /validation\.js\?v=0\.0\.5/);
-  assert.match(index, /app\.js\?v=0\.0\.5/);
-  assert.match(app, /app-v0\.0\.5\.js\?v=0\.0\.5/);
+  assert.match(index, /3D City Response Simulator — v0\.0\.6/);
+  assert.match(index, /validation\.js\?v=0\.0\.6/);
+  assert.match(index, /app\.js\?v=0\.0\.6/);
+  assert.match(app, /app-v0\.0\.6\.js\?v=0\.0\.6/);
 });
 
 test('Google Photorealistic 3D tiles are configured to show required on-screen credits', () => {
