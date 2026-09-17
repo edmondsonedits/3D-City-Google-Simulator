@@ -12,6 +12,10 @@ This release corrects truck orientation, chase-camera placement, direct Google c
 
 The Google driving milestone is **awaiting real-key visual validation**. Automated browser tests use real Cesium, the real model and road graph with a synthetic surface/tileset fixture. They do not validate Google's city, bridge decks, grounding or FPS.
 
+## v0.0.5 mobile HUD
+
+The driving view now prioritizes road visibility, especially on phones. The full-width top banner is removed in favor of small edge controls, the title hides on mobile, current street/area becomes a compact upper-left chip, camera/setup stay in the upper-right, and the lower controls use a smaller joystick plus Brake and Center buttons. Camera cycling remains available from the small top-right CAM button.
+
 ## What this demo is proving
 
 The goal is not to build the full simulator yet. Version 0.0.3 is intended to answer the expensive technical questions before a larger Codex build:
