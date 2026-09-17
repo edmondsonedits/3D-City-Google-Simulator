@@ -1,0 +1,25 @@
+.camera-button {
+  min-width: 48px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255,255,255,.06);
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+.camera-button:hover { background: rgba(255,255,255,.12); }
+.setup-grid-v004 { grid-template-columns: 1.3fr .85fr .75fr; }
+.custom-city-field { margin: -4px 0 18px; padding: 14px; border: 1px solid rgba(169,217,255,.2); border-radius: 14px; background: rgba(90,160,210,.06); }
+.custom-city-field[hidden] { display: none !important; }
+#camera-value { max-width: 190px; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 700px) {
+  .setup-grid-v004 { grid-template-columns: 1fr; }
+  .camera-button { min-width: 44px; height: 40px; }
+}
+@media (max-width: 570px) {
+  .camera-button { font-size: 9px; min-width: 40px; }
+  .mobile-buttons { gap: 6px; }
+  .mobile-action { min-height: 44px; }
+}
