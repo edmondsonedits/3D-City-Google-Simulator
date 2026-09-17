@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#071019">
   <meta name="description" content="Google Photorealistic 3D Tiles emergency vehicle driving proof of concept.">
-  <title>3D City Response Simulator — v0.0.5</title>
+  <title>3D City Response Simulator — v0.0.6</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/Widgets/widgets.css">
-  <link rel="stylesheet" href="./styles.css?v=0.0.5">
-  <link rel="stylesheet" href="./features-v0.0.5.css?v=0.0.5">
+  <link rel="stylesheet" href="./styles.css?v=0.0.6">
+  <link rel="stylesheet" href="./features-v0.0.6.css?v=0.0.6">
 </head>
 <body>
   <main id="app-shell">
@@ -22,7 +22,7 @@
       </div>
       <div class="topbar-actions">
         <button id="camera-cycle-button" class="camera-button" type="button" aria-label="Cycle camera view">CAM</button>
-        <span id="version-pill" class="pill">v0.0.5</span>
+        <span id="version-pill" class="pill">v0.0.6</span>
         <button id="setup-button" class="icon-button" type="button" aria-label="Open simulator setup">⚙</button>
       </div>
     </header>
@@ -86,7 +86,7 @@
       <form id="setup-form" class="setup-card" autocomplete="off">
         <div class="setup-heading">
           <div>
-            <p class="eyebrow">VERSION 0.0.5 · ONTARIO 3D DEMO</p>
+            <p class="eyebrow">VERSION 0.0.6 · ONTARIO 3D DEMO</p>
             <h2>Google 3D Driving Test</h2>
           </div>
           <span class="prototype-badge">Prototype</span>
@@ -97,7 +97,7 @@
         <input id="api-key" name="apiKey" type="password" inputmode="text" placeholder="Paste a Google Maps Platform API key" required>
         <p class="field-help">Map Tiles API is required. Ontario city search also requires Maps JavaScript API on the same key. The key stays in this browser tab and is never committed to GitHub.</p>
 
-        <div class="form-grid setup-grid-v005">
+        <div class="form-grid setup-grid-v006">
           <label>Starting location
             <select id="station-select" name="station">
               <option value="station1">Peterborough Station 1 — Sherbrooke St.</option>
@@ -153,7 +153,7 @@
       window.GOOGLE_TILESET_OPTIONS = Object.freeze({ showCreditsOnScreen: true });
     })();
   </script>
-  <script type="module" src="./app.js?v=0.0.5"></script>
-  <script src="./validation.js?v=0.0.5"></script>
+  <script type="module" src="./app.js?v=0.0.6"></script>
+  <script src="./validation.js?v=0.0.6"></script>
 </body>
 </html>
