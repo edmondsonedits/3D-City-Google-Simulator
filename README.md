@@ -1,33 +1,51 @@
-# 3D City Google Simulator — v0.0.1
+# 3D City Google Simulator — v0.0.2
 
 A focused proof of concept for a future commercial firefighter/EMS street-knowledge simulator. The demo streams **Google Photorealistic 3D Tiles** through **CesiumJS**, then layers independent vehicle physics, road matching, controls, and training-oriented UI over the visual city.
 
 ## What this demo is proving
 
-The goal is not to build the full simulator yet. Version 0.0.1 answers the expensive technical questions first:
+The goal is not to build the full simulator yet. Version 0.0.2 is intended to answer the expensive technical questions before a larger Codex build:
 
-- Can Google Photorealistic 3D Tiles provide a convincing city-scale driving environment?
-- Can our existing rescue-pumper asset be driven through that streamed world?
-- Can our independent road data remain the training/driving truth while Google is only the visual layer?
-- Can we keep the truck visually grounded against the rendered Google mesh?
-- Can desktop and mobile controls feel usable at street level?
-- Can a chase camera remain attached to the apparatus while still supporting free look and recenter?
+- Can Google Photorealistic 3D Tiles provide a convincing street-level city environment?
+- Can the existing rescue-pumper asset be driven through that streamed world?
+- Can independent road data remain the driving/training truth while Google is the visual layer?
+- Can the truck remain visually grounded against the rendered Google mesh?
+- Can desktop and mobile controls work at street level?
+- Can a chase camera support free look and return to persistent FOLLOW mode?
+- Is performance good enough to justify expanding the concept?
 
 ## Demo features
 
-- Google Photorealistic 3D Tiles loaded directly with CesiumJS 1.138
-- Peterborough, Ontario Station 1, 2, and 3 starting positions
+- Google Photorealistic 3D Tiles with CesiumJS 1.138
+- Peterborough Station 1, 2, and 3 starting positions
 - Original project rescue-pumper GLB from the Peterborough simulator
 - Heavy apparatus bicycle-model steering, acceleration, braking, reverse, drag, and off-road speed limits
-- Independent Peterborough OSM/public-road GeoJSON for current-street matching
-- Heading-aware street matching with sticky/hysteresis bias
-- Rendered-mesh height sampling to visually align the truck with Google's 3D surface
+- Independent Peterborough public-road GeoJSON for current-street matching
+- Heading-aware road matching with sticky-name bias
+- Rendered-mesh surface-height sampling
 - Persistent chase camera, free look, recenter, and zoom
 - Desktop keyboard controls
 - Mobile virtual joystick, brake, and recenter controls
-- Diagnostics for FPS, tile streaming, road graph, surface height, road distance, and vehicle position
-- Runtime API-key entry; no Google key is stored in the repository
-- Automated vehicle-physics regression tests
+- Runtime Google API-key entry; no key is committed to the repository
+- Diagnostics for FPS, tile state, road graph, surface height, road distance, and vehicle position
+- Automated proof-of-concept validation tracking
+- One-click validation report intended to be pasted into Codex after the test drive
+- Regression and static configuration tests
+
+## v0.0.2 validation additions
+
+Version 0.0.2 adds a structured pre-Codex test pass. Open **Diagnostics** after launching the city and:
+
+1. Let nearby Google 3D detail settle.
+2. Confirm the road graph and surface height lock.
+3. Drive at least **50 m**.
+4. Drag the 3D view to enter free look.
+5. Press **C** or **Recenter**.
+6. Let the FPS sample collect.
+7. Press **Copy validation report**.
+8. Complete the manual visual checklist in the copied report and give it to Codex.
+
+The browser also exposes `window.__CITY_DEMO_VALIDATION__` with `snapshot()`, `report()`, and `reset()` so future browser automation can inspect the same proof-of-concept signals.
 
 ## Controls
 
@@ -51,15 +69,19 @@ The goal is not to build the full simulator yet. Version 0.0.1 answers the expen
 ## Google API setup
 
 1. Create or select a Google Cloud project.
-2. Attach billing to the project.
+2. Attach billing.
 3. Enable **Map Tiles API**.
-4. Create an API key for testing.
-5. Restrict the key to the Map Tiles API and apply the strongest client/application restrictions supported for your deployment.
+4. Create a test API key.
+5. Restrict the key to the Map Tiles API and apply appropriate application restrictions for the deployment.
 6. Open the demo and paste the key into the setup screen.
 
-The key is stored only in `sessionStorage` for the current browser tab. It is passed directly to the Google/Cesium tile loader and is never committed to this repository.
+The prototype stores the key only in `sessionStorage` for the current browser tab. Production credential handling should be reviewed separately before commercial deployment.
 
-For a production commercial build, follow Google's current API-key security guidance and current Map Tiles/Photorealistic 3D Tiles terms rather than treating this prototype key flow as the final credential architecture.
+## Google/Cesium policy guardrails
+
+The demo forces `showCreditsOnScreen: true` when creating Google Photorealistic 3D Tiles so tile attribution is rendered on-screen. It also applies Google's recommended `tile.googleapis.com:443` request concurrency of 18 for CesiumJS streaming performance.
+
+Do not remove Google attribution, download/rehost the Google city, extract or trace Google geometry/textures, or use this training prototype as live emergency-response navigation.
 
 ## Architecture
 
@@ -82,18 +104,18 @@ mobile + keyboard input
 future dispatch/training logic
 ```
 
-Google's mesh is deliberately **not** used as the authoritative road network. The current demo uses independent road geometry for road/street logic and samples Google's rendered mesh only for visual surface alignment. This separation is intended to keep the eventual training product independent, predictable, and portable.
+Google's mesh is deliberately **not** the authoritative road network. Independent road geometry controls street logic and road/off-road behaviour; the Google mesh is sampled for visual surface alignment.
 
 ## Existing project data reused
 
-The proof of concept references these existing assets from `edmondsonedits/Peterborough-Map-Game`:
+The proof of concept currently references these existing resources from `edmondsonedits/Peterborough-Map-Game`:
 
 - `city-explorer/assets/vehicles/generic-pumper.glb`
 - `city-explorer/data/osm-public-roads.geojson`
 - Peterborough fire-station spawn coordinates
 - established heavy-truck physics tuning
 
-The pumper is an original project asset marked for commercial use in its source metadata.
+For the larger build, Codex should move critical runtime assets/data into this repository or a defined city-pack pipeline so the new simulator is not dependent on another project's raw GitHub paths.
 
 ## Testing
 
@@ -101,20 +123,24 @@ The pumper is an original project asset marked for commercial use in its source 
 npm test
 ```
 
-Tests cover forward/reverse limits, braking, off-road limiting, steering direction, frame-rate stability, geographic movement convention, and bidirectional road-heading matching.
+Tests cover vehicle physics, braking, off-road limits, steering direction, frame-rate stability, geographic movement, version alignment, required Google attribution configuration, tile-request optimization, and validation UI presence.
 
 ## Deployment
 
-`.github/workflows/demo-pages.yml` runs the physics tests and deploys the static site to GitHub Pages on pushes to `main`.
+`.github/workflows/demo-pages.yml` tests the build and deploys the static site to GitHub Pages on pushes to `main`.
 
-If GitHub Pages has never been enabled for this repository, enable **Settings → Pages → Source: GitHub Actions** once. Subsequent pushes deploy automatically.
+This repository was created with GitHub Pages disabled. One manual repository setting is still required:
 
-Expected Pages URL after enablement:
+**Settings → Pages → Build and deployment → Source → GitHub Actions**
+
+Expected URL afterward:
 
 `https://edmondsonedits.github.io/3D-City-Google-Simulator/`
+
+## Codex handoff
+
+Read [`CODEX_HANDOFF.md`](./CODEX_HANDOFF.md) before expanding the simulator. It defines the prototype boundary, what must remain independent from Google, the validation gate, known risks, and the recommended next implementation phases.
 
 ## Prototype boundary
 
 This project is for **training and simulation only**. It is not intended for live emergency-response navigation or operational dispatch routing.
-
-The simulator must preserve all Google/Cesium attribution rendered by the viewer. Do not use this project to download, redistribute, extract, trace, or create derivative 3D assets from Google Maps content.

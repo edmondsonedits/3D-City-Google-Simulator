@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#071019">
   <meta name="description" content="Google Photorealistic 3D Tiles emergency vehicle driving proof of concept.">
-  <title>3D City Response Simulator — v0.0.1</title>
+  <title>3D City Response Simulator — v0.0.2</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/Widgets/widgets.css">
-  <link rel="stylesheet" href="./styles.css?v=0.0.1">
+  <link rel="stylesheet" href="./styles.css?v=0.0.2">
 </head>
 <body>
   <main id="app-shell">
@@ -20,7 +20,7 @@
         <h1>3D City Response Simulator</h1>
       </div>
       <div class="topbar-actions">
-        <span id="version-pill" class="pill">v0.0.1</span>
+        <span id="version-pill" class="pill">v0.0.2</span>
         <button id="setup-button" class="icon-button" type="button" aria-label="Open simulator setup">⚙</button>
       </div>
     </header>
@@ -46,6 +46,7 @@
     <button id="diagnostics-toggle" class="diagnostics-toggle glass" type="button">Diagnostics</button>
     <aside id="diagnostics-panel" class="diagnostics-panel glass" hidden>
       <div class="panel-title"><strong>Proof-of-concept diagnostics</strong><button id="diagnostics-close" type="button" aria-label="Close diagnostics">×</button></div>
+      <p class="field-help">For the handoff test: let the city settle, drive at least 50 m, drag the view, then press C/Recenter.</p>
       <dl>
         <div><dt>FPS</dt><dd id="diag-fps">—</dd></div>
         <div><dt>Google tiles</dt><dd id="diag-tiles">Not loaded</dd></div>
@@ -53,10 +54,15 @@
         <div><dt>Surface height</dt><dd id="diag-height">—</dd></div>
         <div><dt>Road distance</dt><dd id="diag-road-distance">—</dd></div>
         <div><dt>Position</dt><dd id="diag-position">—</dd></div>
+        <div><dt>Drive test</dt><dd id="diag-drive-test">○ drive 50 m</dd></div>
+        <div><dt>Camera test</dt><dd id="diag-camera-test">○ drag view, then recenter</dd></div>
+        <div><dt>Performance</dt><dd id="diag-performance-test">○ collecting FPS</dd></div>
+        <div><dt>Readiness</dt><dd id="diag-readiness">0/6 automatic checks passed</dd></div>
       </dl>
       <div class="diag-actions">
         <button id="flip-model" type="button">Flip truck 180°</button>
         <button id="reset-truck" type="button">Reset truck</button>
+        <button id="copy-validation-report" type="button">Copy validation report</button>
       </div>
     </aside>
 
@@ -78,12 +84,12 @@
       <form id="setup-form" class="setup-card" autocomplete="off">
         <div class="setup-heading">
           <div>
-            <p class="eyebrow">VERSION 0.0.1 · PETERBOROUGH DEMO</p>
+            <p class="eyebrow">VERSION 0.0.2 · PETERBOROUGH DEMO</p>
             <h2>Google 3D Driving Test</h2>
           </div>
           <span class="prototype-badge">Prototype</span>
         </div>
-        <p class="setup-copy">This test streams Google Photorealistic 3D Tiles through CesiumJS, then runs your own fire-truck physics and road intelligence on top.</p>
+        <p class="setup-copy">This test streams Google Photorealistic 3D Tiles through CesiumJS, then runs your own fire-truck physics and road intelligence on top. Version 0.0.2 adds a structured validation report for the Codex handoff.</p>
 
         <label for="api-key">Google Maps Platform API key</label>
         <input id="api-key" name="apiKey" type="password" inputmode="text" placeholder="Paste a Map Tiles API key" required>
@@ -112,13 +118,28 @@
           <a href="https://console.cloud.google.com/google/maps-apis/api-list" target="_blank" rel="noopener noreferrer">Google Cloud API setup ↗</a>
           <a href="https://developers.google.com/maps/documentation/tile/3d-tiles" target="_blank" rel="noopener noreferrer">3D Tiles documentation ↗</a>
         </div>
-        <p class="legal-note">Training/simulation prototype only. Not for live emergency navigation. Google attribution remains visible in the Cesium viewer.</p>
+        <p class="legal-note">Training/simulation prototype only. Not for live emergency navigation. Google attribution is forced on-screen for the Photorealistic 3D tileset.</p>
       </form>
     </section>
   </main>
 
   <script>window.CESIUM_BASE_URL = 'https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/';</script>
   <script src="https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/Cesium.js"></script>
-  <script type="module" src="./app.js?v=0.0.1"></script>
+  <script>
+    (() => {
+      const Cesium = window.Cesium;
+      if (!Cesium) return;
+      if (Cesium.RequestScheduler?.requestsByServer) {
+        Cesium.RequestScheduler.requestsByServer['tile.googleapis.com:443'] = 18;
+      }
+      const originalCreateGoogleTileset = Cesium.createGooglePhotorealistic3DTileset;
+      if (typeof originalCreateGoogleTileset === 'function') {
+        Cesium.createGooglePhotorealistic3DTileset = (apiOptions, tilesetOptions = {}) =>
+          originalCreateGoogleTileset(apiOptions, { ...tilesetOptions, showCreditsOnScreen: true });
+      }
+    })();
+  </script>
+  <script type="module" src="./app.js?v=0.0.2"></script>
+  <script src="./validation.js?v=0.0.2"></script>
 </body>
 </html>
