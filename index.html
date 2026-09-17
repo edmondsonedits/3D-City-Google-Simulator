@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#071019">
+  <meta name="description" content="Google Photorealistic 3D Tiles emergency vehicle driving proof of concept.">
+  <title>3D City Response Simulator — v0.0.1</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/Widgets/widgets.css">
+  <link rel="stylesheet" href="./styles.css?v=0.0.1">
+</head>
+<body>
+  <main id="app-shell">
+    <div id="cesium-container" aria-label="3D city simulator viewport"></div>
+
+    <header class="topbar glass">
+      <div>
+        <p class="eyebrow">PROOF OF CONCEPT · TRAINING ONLY</p>
+        <h1>3D City Response Simulator</h1>
+      </div>
+      <div class="topbar-actions">
+        <span id="version-pill" class="pill">v0.0.1</span>
+        <button id="setup-button" class="icon-button" type="button" aria-label="Open simulator setup">⚙</button>
+      </div>
+    </header>
+
+    <section id="street-card" class="street-card glass" aria-live="polite">
+      <span class="street-label">CURRENT STREET</span>
+      <strong id="street-name">Waiting for road data…</strong>
+      <span id="road-status" class="road-state">Road data loading</span>
+    </section>
+
+    <section id="drive-hud" class="drive-hud glass" aria-label="Vehicle status">
+      <div class="speed"><strong id="speed-value">0</strong><span>km/h</span></div>
+      <div class="hud-stat"><span>Gear</span><strong id="gear-value">N</strong></div>
+      <div class="hud-stat"><span>Camera</span><strong id="camera-value">FOLLOW</strong></div>
+      <div class="hud-stat"><span>Spawn</span><strong id="station-value">Station 1</strong></div>
+    </section>
+
+    <section id="status-stack" class="status-stack" aria-live="polite">
+      <div id="tiles-status" class="status-chip">3D world: setup required</div>
+      <div id="surface-status" class="status-chip">Surface: waiting</div>
+    </section>
+
+    <button id="diagnostics-toggle" class="diagnostics-toggle glass" type="button">Diagnostics</button>
+    <aside id="diagnostics-panel" class="diagnostics-panel glass" hidden>
+      <div class="panel-title"><strong>Proof-of-concept diagnostics</strong><button id="diagnostics-close" type="button" aria-label="Close diagnostics">×</button></div>
+      <dl>
+        <div><dt>FPS</dt><dd id="diag-fps">—</dd></div>
+        <div><dt>Google tiles</dt><dd id="diag-tiles">Not loaded</dd></div>
+        <div><dt>Road graph</dt><dd id="diag-roads">Loading</dd></div>
+        <div><dt>Surface height</dt><dd id="diag-height">—</dd></div>
+        <div><dt>Road distance</dt><dd id="diag-road-distance">—</dd></div>
+        <div><dt>Position</dt><dd id="diag-position">—</dd></div>
+      </dl>
+      <div class="diag-actions">
+        <button id="flip-model" type="button">Flip truck 180°</button>
+        <button id="reset-truck" type="button">Reset truck</button>
+      </div>
+    </aside>
+
+    <div id="desktop-hint" class="desktop-hint glass">
+      <span><kbd>W/S</kbd> drive</span><span><kbd>A/D</kbd> steer</span><span><kbd>Space</kbd> brake</span><span><kbd>C</kbd> recenter</span><span>drag to look</span>
+    </div>
+
+    <div id="mobile-controls" class="mobile-controls" aria-label="Mobile driving controls">
+      <div id="joystick" class="joystick" role="application" aria-label="Driving joystick">
+        <div class="joystick-ring"><div id="joystick-knob" class="joystick-knob"></div></div>
+      </div>
+      <div class="mobile-buttons">
+        <button id="mobile-brake" class="mobile-action brake" type="button">BRAKE</button>
+        <button id="mobile-recenter" class="mobile-action" type="button">RECENTER</button>
+      </div>
+    </div>
+
+    <section id="setup-overlay" class="setup-overlay">
+      <form id="setup-form" class="setup-card" autocomplete="off">
+        <div class="setup-heading">
+          <div>
+            <p class="eyebrow">VERSION 0.0.1 · PETERBOROUGH DEMO</p>
+            <h2>Google 3D Driving Test</h2>
+          </div>
+          <span class="prototype-badge">Prototype</span>
+        </div>
+        <p class="setup-copy">This test streams Google Photorealistic 3D Tiles through CesiumJS, then runs your own fire-truck physics and road intelligence on top.</p>
+
+        <label for="api-key">Google Maps Platform API key</label>
+        <input id="api-key" name="apiKey" type="password" inputmode="text" placeholder="Paste a Map Tiles API key" required>
+        <p class="field-help">The key is kept only in this browser tab (sessionStorage) and is sent directly to Google by Cesium. It is never committed to GitHub.</p>
+
+        <div class="form-grid">
+          <label>Starting station
+            <select id="station-select" name="station">
+              <option value="station1">Station 1 — 210 Sherbrooke St.</option>
+              <option value="station2">Station 2 — 100 Marina Blvd.</option>
+              <option value="station3">Station 3 — 1359 Clonsilla Ave.</option>
+            </select>
+          </label>
+          <label>3D quality
+            <select id="quality-select" name="quality">
+              <option value="performance">Performance</option>
+              <option value="balanced" selected>Balanced</option>
+              <option value="high">High detail</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="setup-error" class="setup-error" role="alert" hidden></div>
+        <button id="launch-button" class="primary-button" type="submit">Launch 3D Demo</button>
+        <div class="setup-links">
+          <a href="https://console.cloud.google.com/google/maps-apis/api-list" target="_blank" rel="noopener noreferrer">Google Cloud API setup ↗</a>
+          <a href="https://developers.google.com/maps/documentation/tile/3d-tiles" target="_blank" rel="noopener noreferrer">3D Tiles documentation ↗</a>
+        </div>
+        <p class="legal-note">Training/simulation prototype only. Not for live emergency navigation. Google attribution remains visible in the Cesium viewer.</p>
+      </form>
+    </section>
+  </main>
+
+  <script>window.CESIUM_BASE_URL = 'https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/';</script>
+  <script src="https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/Cesium.js"></script>
+  <script type="module" src="./app.js?v=0.0.1"></script>
+</body>
+</html>
