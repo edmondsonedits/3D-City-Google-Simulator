@@ -5,23 +5,34 @@ import fs from 'node:fs';
 const index = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const pkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const app = fs.readFileSync(new URL('../app.js', import.meta.url), 'utf8');
+const runtime = fs.readFileSync(new URL('../app-v0.0.4.js', import.meta.url), 'utf8');
 
-test('release metadata is aligned to v0.0.3', () => {
-  assert.equal(pkg.version, '0.0.3');
-  assert.match(index, /3D City Response Simulator — v0\.0\.3/);
-  assert.match(index, /validation\.js\?v=0\.0\.3/);
-  assert.match(index, /app\.js\?v=0\.0\.3/);
+test('release metadata is aligned to v0.0.4', () => {
+  assert.equal(pkg.version, '0.0.4');
+  assert.match(index, /3D City Response Simulator — v0\.0\.4/);
+  assert.match(index, /validation\.js\?v=0\.0\.4/);
+  assert.match(index, /app\.js\?v=0\.0\.4/);
+  assert.match(app, /app-v0\.0\.4\.js\?v=0\.0\.4/);
 });
 
 test('Google Photorealistic 3D tiles are configured to show required on-screen credits', () => {
   assert.match(index, /showCreditsOnScreen:\s*true/);
-  assert.match(app, /createGooglePhotorealistic3DTileset\([\s\S]*?showCreditsOnScreen:\s*true/);
+  assert.match(runtime, /createGooglePhotorealistic3DTileset\([\s\S]*?showCreditsOnScreen:\s*true/);
   assert.doesNotMatch(index, /Cesium\.createGooglePhotorealistic3DTileset\s*=/);
 });
 
 test('Google recommended tile request concurrency optimization is present', () => {
   assert.match(index, /tile\.googleapis\.com:443/);
   assert.match(index, /=\s*18/);
+});
+
+test('Ontario location picker and camera presets are present', () => {
+  assert.match(index, /id="ontario-city-input"/);
+  assert.match(index, /value="ontario"/);
+  assert.match(index, /id="camera-select"/);
+  assert.match(index, /id="camera-cycle-button"/);
+  assert.match(runtime, /componentRestrictions:[\s\S]*administrativeArea:\s*'ON'/);
+  assert.match(runtime, /CAMERA_PRESETS/);
 });
 
 test('validation report UI is present for Codex handoff testing', () => {
