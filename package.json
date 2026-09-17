@@ -1,12 +1,12 @@
 {
   "name": "3d-city-google-simulator",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "private": true,
   "type": "module",
   "description": "Google Photorealistic 3D Tiles emergency vehicle driving proof of concept.",
   "scripts": {
     "start": "node tools/serve.mjs",
-    "test": "node --check app.js && node --check app-v0.0.4.js && node --check logic.js && node --check surface.js && node --check validation.js && node --test tests/*.test.mjs",
+    "test": "node --check app.js && node --check app-v0.0.6.js && node --check logic.js && node --check surface.js && node --check validation.js && node --test tests/*.test.mjs",
     "test:browser": "node tests/browser.mjs"
   },
   "engines": {
