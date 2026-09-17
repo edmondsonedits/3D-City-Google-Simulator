@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#071019">
   <meta name="description" content="Google Photorealistic 3D Tiles emergency vehicle driving proof of concept.">
-  <title>3D City Response Simulator — v0.0.3</title>
+  <title>3D City Response Simulator — v0.0.4</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/Widgets/widgets.css">
-  <link rel="stylesheet" href="./styles.css?v=0.0.3">
+  <link rel="stylesheet" href="./styles.css?v=0.0.4">
+  <link rel="stylesheet" href="./features-v0.0.4.css?v=0.0.4">
 </head>
 <body>
   <main id="app-shell">
@@ -20,13 +21,14 @@
         <h1>3D City Response Simulator</h1>
       </div>
       <div class="topbar-actions">
-        <span id="version-pill" class="pill">v0.0.3</span>
+        <button id="camera-cycle-button" class="camera-button" type="button" aria-label="Cycle camera view">CAM</button>
+        <span id="version-pill" class="pill">v0.0.4</span>
         <button id="setup-button" class="icon-button" type="button" aria-label="Open simulator setup">⚙</button>
       </div>
     </header>
 
     <section id="street-card" class="street-card glass" aria-live="polite">
-      <span class="street-label">CURRENT STREET</span>
+      <span class="street-label">CURRENT STREET / AREA</span>
       <strong id="street-name">Waiting for road data…</strong>
       <span id="road-status" class="road-state">Road data loading</span>
     </section>
@@ -34,7 +36,7 @@
     <section id="drive-hud" class="drive-hud glass" aria-label="Vehicle status">
       <div class="speed"><strong id="speed-value">0</strong><span>km/h</span></div>
       <div class="hud-stat"><span>Gear</span><strong id="gear-value">N</strong></div>
-      <div class="hud-stat"><span>Camera</span><strong id="camera-value">FOLLOW</strong></div>
+      <div class="hud-stat"><span>Camera</span><strong id="camera-value">Standard chase · FOLLOW</strong></div>
       <div class="hud-stat"><span>Spawn</span><strong id="station-value">Station 1</strong></div>
     </section>
 
@@ -46,7 +48,7 @@
     <button id="diagnostics-toggle" class="diagnostics-toggle glass" type="button">Diagnostics</button>
     <aside id="diagnostics-panel" class="diagnostics-panel glass" hidden>
       <div class="panel-title"><strong>Proof-of-concept diagnostics</strong><button id="diagnostics-close" type="button" aria-label="Close diagnostics">×</button></div>
-      <p class="field-help">For the handoff test: let the city settle, drive at least 50 m, drag the view, then press C/Recenter.</p>
+      <p class="field-help">Drive at least 50 m, drag the view, then press C/Recenter. Peterborough adds independent road matching; other Ontario cities are visual free-drive tests.</p>
       <dl>
         <div><dt>FPS</dt><dd id="diag-fps">—</dd></div>
         <div><dt>Google tiles</dt><dd id="diag-tiles">Not loaded</dd></div>
@@ -67,7 +69,7 @@
     </aside>
 
     <div id="desktop-hint" class="desktop-hint glass">
-      <span><kbd>W/S</kbd> drive</span><span><kbd>A/D</kbd> steer</span><span><kbd>Space</kbd> brake</span><span><kbd>C</kbd> recenter</span><span>drag to look</span>
+      <span><kbd>W/S</kbd> drive</span><span><kbd>A/D</kbd> steer</span><span><kbd>Space</kbd> brake</span><span><kbd>C</kbd> recenter</span><span><kbd>V</kbd> camera</span><span>drag to look</span>
     </div>
 
     <div id="mobile-controls" class="mobile-controls" aria-label="Mobile driving controls">
@@ -76,6 +78,7 @@
       </div>
       <div class="mobile-buttons">
         <button id="mobile-brake" class="mobile-action brake" type="button">BRAKE</button>
+        <button id="mobile-camera" class="mobile-action" type="button">CAMERA</button>
         <button id="mobile-recenter" class="mobile-action" type="button">RECENTER</button>
       </div>
     </div>
@@ -84,23 +87,33 @@
       <form id="setup-form" class="setup-card" autocomplete="off">
         <div class="setup-heading">
           <div>
-            <p class="eyebrow">VERSION 0.0.3 · PETERBOROUGH DEMO</p>
+            <p class="eyebrow">VERSION 0.0.4 · ONTARIO 3D DEMO</p>
             <h2>Google 3D Driving Test</h2>
           </div>
           <span class="prototype-badge">Prototype</span>
         </div>
-        <p class="setup-copy">Drive a rescue pumper through Google’s photorealistic Peterborough. Start at a fire station, explore the streets, and use Diagnostics to report your drive.</p>
+        <p class="setup-copy">Start at a Peterborough fire station or type any Ontario city/town. Choose a camera view, then drive through Google’s photorealistic 3D world.</p>
 
         <label for="api-key">Google Maps Platform API key</label>
-        <input id="api-key" name="apiKey" type="password" inputmode="text" placeholder="Paste a Map Tiles API key" required>
-        <p class="field-help">The key is kept only in this browser tab (sessionStorage) and is sent directly to Google by Cesium. It is never committed to GitHub.</p>
+        <input id="api-key" name="apiKey" type="password" inputmode="text" placeholder="Paste a Google Maps Platform API key" required>
+        <p class="field-help">Map Tiles API is required. Ontario city search also requires Maps JavaScript API on the same key. The key stays in this browser tab and is never committed to GitHub.</p>
 
-        <div class="form-grid">
-          <label>Starting station
+        <div class="form-grid setup-grid-v004">
+          <label>Starting location
             <select id="station-select" name="station">
-              <option value="station1">Station 1 — 210 Sherbrooke St.</option>
-              <option value="station2">Station 2 — 100 Marina Blvd.</option>
-              <option value="station3">Station 3 — 1359 Clonsilla Ave.</option>
+              <option value="station1">Peterborough Station 1 — Sherbrooke St.</option>
+              <option value="station2">Peterborough Station 2 — Marina Blvd.</option>
+              <option value="station3">Peterborough Station 3 — Clonsilla Ave.</option>
+              <option value="ontario">Choose an Ontario city / town…</option>
+            </select>
+          </label>
+          <label>Camera view
+            <select id="camera-select" name="camera">
+              <option value="cab">Cab POV</option>
+              <option value="close">Close chase</option>
+              <option value="chase" selected>Standard chase</option>
+              <option value="wide">Wide chase</option>
+              <option value="high">High angle</option>
             </select>
           </label>
           <label>3D quality
@@ -112,6 +125,12 @@
           </label>
         </div>
 
+        <div id="custom-city-field" class="custom-city-field" hidden>
+          <label for="ontario-city-input">Ontario city or town</label>
+          <input id="ontario-city-input" name="ontarioCity" type="text" placeholder="e.g. Toronto, Ottawa, Kingston, Sudbury">
+          <p class="field-help">Search is submitted only when you launch. The result must resolve to Ontario, Canada.</p>
+        </div>
+
         <div id="setup-error" class="setup-error" role="alert" hidden></div>
         <button id="launch-button" class="primary-button" type="submit">Launch 3D Demo</button>
         <button id="resume-button" class="primary-button resume-button" type="button" hidden>Resume driving</button>
@@ -119,11 +138,11 @@
           <a href="https://console.cloud.google.com/google/maps-apis/api-list" target="_blank" rel="noopener noreferrer">Google Cloud API setup ↗</a>
           <a href="https://developers.google.com/maps/documentation/tile/3d-tiles" target="_blank" rel="noopener noreferrer">3D Tiles documentation ↗</a>
         </div>
-        <p class="legal-note">Training/simulation prototype only. Not for live emergency navigation. Google attribution is forced on-screen for the Photorealistic 3D tileset.</p>
+        <p class="legal-note">Training/simulation prototype only. Not for live emergency navigation. Google attribution remains on-screen. Peterborough has independent road/street matching; other Ontario cities currently use Google only as the visual world.</p>
       </form>
     </section>
   </main>
-  <a class="road-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Roads © OpenStreetMap contributors</a>
+  <a class="road-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Peterborough roads © OpenStreetMap contributors</a>
 
   <script>window.CESIUM_BASE_URL = 'https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/';</script>
   <script src="https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/Cesium.js"></script>
@@ -131,13 +150,11 @@
     (() => {
       const Cesium = window.Cesium;
       if (!Cesium) return;
-      if (Cesium.RequestScheduler?.requestsByServer) {
-        Cesium.RequestScheduler.requestsByServer['tile.googleapis.com:443'] = 18;
-      }
+      if (Cesium.RequestScheduler?.requestsByServer) Cesium.RequestScheduler.requestsByServer['tile.googleapis.com:443'] = 18;
       window.GOOGLE_TILESET_OPTIONS = Object.freeze({ showCreditsOnScreen: true });
     })();
   </script>
-  <script type="module" src="./app.js?v=0.0.3"></script>
-  <script src="./validation.js?v=0.0.3"></script>
+  <script type="module" src="./app.js?v=0.0.4"></script>
+  <script src="./validation.js?v=0.0.4"></script>
 </body>
 </html>
