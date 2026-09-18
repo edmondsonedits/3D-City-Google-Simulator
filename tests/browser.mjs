@@ -63,6 +63,7 @@ async function launch(page) {
   await page.waitForFunction(() => window.__CITY_DEMO_RUNTIME__?.snapshot().running);
   await page.waitForFunction(() => window.testViewer.scene.primitives._primitives.some(p => p.ready === true));
   await page.waitForFunction(() => window.__CITY_DEMO_RUNTIME__.snapshot().surfaceLocked);
+  await page.waitForFunction(() => window.__CITY_DEMO_RUNTIME__.snapshot().cameraMode === 'FOLLOW', {}, { timeout: 10000 });
 }
 const runtime = page => page.evaluate(() => window.__CITY_DEMO_RUNTIME__.snapshot());
 
