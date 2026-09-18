@@ -1,8 +1,8 @@
-# 3D City Google Simulator — v0.0.6
+# 3D City Google Simulator — v0.0.7
 
 A focused proof of concept for a future commercial firefighter/EMS street-knowledge simulator. The demo streams **Google Photorealistic 3D Tiles** through **CesiumJS**, then layers independent vehicle physics, road matching, controls, and training-oriented UI over the visual city.
 
-## Play v0.0.6
+## Play v0.0.7
 
 Open https://edmondsonedits.github.io/3D-City-Google-Simulator/ and enter your own Map Tiles API key. Choose Station 1 and launch. The key needs billing, Map Tiles API access, and website restrictions allowing that address. No Google key ships with the game.
 
@@ -11,6 +11,12 @@ Locally, run `npm start` and open http://127.0.0.1:4173/. Allow that address in 
 This release corrects truck orientation, chase-camera placement, direct Google credit configuration, low-FPS integration, truck self-sampling, stale surface requests, off-road classification, mobile touch release/recenter and validation false positives. It bundles the existing independent roads and pumper. See [AUDIT.md](AUDIT.md), [ASSETS.md](ASSETS.md) and [RELEASE_REPORT.md](RELEASE_REPORT.md).
 
 The Google driving milestone is **awaiting real-key visual validation**. Automated browser tests use real Cesium, the real model and road graph with a synthetic surface/tileset fixture. They do not validate Google's city, bridge decks, grounding or FPS.
+
+## v0.0.7 camera, address spawn, and recovery
+
+Adds **Tactical overhead** and **Bird’s-eye · GTA** camera presets. The GTA-style view follows from roughly 95 m with a steep downward pitch, while free-look and mouse-wheel zoom now support much higher ranges.
+
+The setup menu also includes a collapsible **Spawn & recovery tools** submenu. While the simulator is running, enter an Ontario street address to move the truck there using the existing Google Maps JavaScript API geocoder. The same submenu includes **Recover truck to surface**, which re-samples the rendered Google surface beneath the apparatus and snaps the truck back above it if visual grounding fails.
 
 ## v0.0.6 mobile long-press fix
 
