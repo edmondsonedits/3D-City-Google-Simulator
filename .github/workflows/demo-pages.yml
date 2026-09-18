@@ -28,7 +28,7 @@ jobs:
         run: npm test
       - name: Validate dispatch prototype modules
         run: |
-          node --check app-dispatch-v0.0.20.js
+          node --check app-dispatch-v0.0.21.js
           node --check app-dispatch-v0.0.19.js
           node --check app-dispatch-v0.0.18.js
           node --check dispatch/integration-polish-v0.0.18.js
@@ -41,7 +41,7 @@ jobs:
       - name: Validate production remains isolated
         run: |
           grep -q 'app.js?v=0.0.8' index.html
-          test -f dispatch-prototype-v0.0.20.html
+          test -f dispatch-prototype-v0.0.21.html
           ! grep -R -E 'AIza[0-9A-Za-z_-]{20,}' --exclude-dir=.git .
       - name: Install browser tests
         run: npm ci
@@ -50,7 +50,7 @@ jobs:
       - name: Run real-renderer fixture tests (not Google validation)
         run: npm run test:browser
       - name: Run dispatch integration browser tests
-        run: node tests/dispatch-browser-v0.0.20.mjs
+        run: node tests/dispatch-browser-v0.0.21.mjs
       - name: Save browser evidence
         if: always()
         uses: actions/upload-artifact@v4
