@@ -4,12 +4,6 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      run_full_tests:
-        description: 'Run the full browser/integration test suite'
-        required: false
-        default: false
-        type: boolean
 
 permissions:
   contents: read
@@ -22,7 +16,6 @@ concurrency:
 
 jobs:
   test:
-    if: github.event_name == 'workflow_dispatch' && inputs.run_full_tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,41 +24,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Run vehicle physics tests
+      - name: Install dependencies
+        run: npm ci
+      - name: Run integration and syntax tests
         run: npm test
-      - name: Validate dispatch prototype modules
-        run: |
-          node --check app-dispatch-v0.0.25.js
-          node --check app-dispatch-v0.0.19.js
-          node --check app-dispatch-v0.0.18.js
-          node --check dispatch/integration-polish-v0.0.18.js
-          node --check app-dispatch-v0.0.17.js
-          node --check dispatch/after-action-review-v0.0.17.js
-          node --check dispatch/response-tablet-v0.0.16.js
-          node --check dispatch/ems-transport-v0.0.15.js
-          node --check dispatch/incident-spatial-v0.0.14.js
-          node --check dispatch/dispatch-gameplay-v0.0.13.js
-      - name: Validate production remains isolated
+      - name: Validate production remains isolated and key-free
         run: |
           grep -q 'app.js?v=0.0.8' index.html
-          test -f dispatch-prototype-v0.0.25.html
+          test -f dispatch-prototype-v0.0.40.html
           ! grep -R -E 'AIza[0-9A-Za-z_-]{20,}' --exclude-dir=.git .
-      - name: Install browser tests
-        run: npm ci
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
-      - name: Run real-renderer fixture tests (not Google validation)
+      - name: Run dispatch completion browser tests
         run: npm run test:browser
-      - name: Run dispatch integration browser tests
-        run: node tests/dispatch-browser-v0.0.22.mjs
-      - name: Save browser evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: browser-evidence
-          path: artifacts/
 
   deploy:
+    needs: test
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
