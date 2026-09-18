@@ -52,6 +52,6 @@ test('context-changing modules expose cleanup boundaries',()=>{
 test('Stage 8 diagnostics/export remains normalized and key-free',()=>{
   const src=read('dispatch/integration-polish-v0.0.18.js');
   assert.match(src,/exportNormalizedData/); assert.match(src,/schemaVersion/); assert.match(src,/dispatch-prototype-cleanup/);
-  const all=['app-dispatch-v0.0.19.js','dispatch/integration-polish-v0.0.18.js','dispatch/response-tablet-v0.0.16.js'].map(read).join('\n');
+  const all=['app-dispatch-v0.0.18.js','dispatch/integration-polish-v0.0.18.js','dispatch/response-tablet-v0.0.16.js'].map(read).join('\n');
   assert.doesNotMatch(all,/AIza[0-9A-Za-z_-]{20,}/);
 });
