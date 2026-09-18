@@ -25,6 +25,19 @@ const url = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch({ ...(process.env.BROWSER_CHANNEL ? { channel: process.env.BROWSER_CHANNEL } : {}), headless: true });
 const evidence = { googleValidated: false, surface: 'synthetic 190m test fixture', cases: [] };
 
+async function captureEvidence(page, filename) {
+  const target = path.join(artifacts, filename);
+  try {
+    await page.screenshot({ path: target, animations: 'disabled', timeout: 10000 });
+    return true;
+  } catch (error) {
+    // Screenshots are diagnostic evidence, not a functional acceptance gate. Chromium
+    // can occasionally reject Page.captureScreenshot on CI even after the page is ready.
+    await fs.writeFile(`${target}.error.txt`, String(error?.stack || error));
+    return false;
+  }
+}
+
 function fixture() {
   const C = window.Cesium = { ...window.Cesium };
   const Original = C.Viewer;
@@ -86,7 +99,7 @@ try {
     await page.goto(url);
     await page.waitForFunction(() => window.__CITY_DEMO_RUNTIME__);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
-    await page.screenshot({ path: path.join(artifacts, `setup-${width}.png`) });
+    const setupScreenshot = await captureEvidence(page, `setup-${width}.png`);
     await launch(page);
     assert.equal(await page.evaluate(() => window.testCreditsEnabled && window.sampleExcludesTruck), true);
     assert.equal((await runtime(page)).roadsReady, true);
@@ -98,7 +111,7 @@ try {
       const p = window.testViewer.camera.position;
       return p.x * Math.sin(h) + p.y * Math.cos(h) < -10;
     }));
-    await page.screenshot({ path: path.join(artifacts, `fixture-${width}.png`) });
+    const fixtureScreenshot = await captureEvidence(page, `fixture-${width}.png`);
 
     if (width === 1440) {
       await page.keyboard.down('w');
@@ -178,7 +191,7 @@ try {
     }
     assert.deepEqual(errors, []);
     assert.deepEqual(failed, []);
-    evidence.cases.push({ name: `${width}x${height}`, errors, failed, horizontalOverflow: false, realModelRendered: true });
+    evidence.cases.push({ name: `${width}x${height}`, errors, failed, horizontalOverflow: false, realModelRendered: true, setupScreenshot, fixtureScreenshot });
     await context.close();
   }
   // Exercise the actual unmodified API boundary with a rejected Google request.
