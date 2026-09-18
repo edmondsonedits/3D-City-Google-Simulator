@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#071019">
+  <meta name="description" content="Google Photorealistic 3D Tiles emergency vehicle driving proof of concept.">
+  <title>3D City Response Simulator — Dispatch</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/Widgets/widgets.css">
+  <link rel="stylesheet" href="./styles.css?v=0.0.8">
+  <link rel="stylesheet" href="./features-v0.0.8.css?v=0.0.8">
+  <style>
+    body[data-build="dispatch-prototype-v0.0.42"]::before{
+      content:"DISPATCH PROTOTYPE · v0.0.42";
+      position:fixed;z-index:9999;left:10px;bottom:8px;
+      padding:5px 8px;border-radius:999px;
+      font:800 9px/1 system-ui;letter-spacing:.08em;
+      color:#d8f8ff;background:rgba(4,15,25,.72);
+      border:1px solid rgba(116,211,255,.35);
+      pointer-events:none;backdrop-filter:blur(6px)
+    }
+  </style>
+<style id="dispatch-responsive-layout-v042">
+/* Dedicated mobile HUD zones: top info, bottom-left drive, bottom-center speed, bottom-right actions. */
+body[data-build="dispatch-prototype-v0.0.42"]::before{display:none!important}
+@media(max-width:700px){
+  .compact-topbar{top:8px!important;left:8px!important;right:8px!important}
+  #street-card{top:72px!important;left:8px!important;right:auto!important;width:min(46vw,190px)!important;padding:7px 9px!important}
+  #street-card .street-label,#street-card #road-status{display:none!important}
+  #street-name{font-size:13px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #dispatch-hud{top:72px!important;right:8px!important;width:min(47vw,205px)!important;padding:7px 8px!important;font-size:10px!important;border-radius:10px!important}
+  #dispatch-hud .dispatch-head strong{font-size:11px!important}
+  #dispatch-hud .dispatch-body{margin-top:4px!important}
+  #dispatch-hud .dispatch-call{font-size:12px!important}
+  #dispatch-hud .dispatch-address{font-size:9px!important;line-height:1.2!important}
+  #dispatch-hud .dispatch-actions{gap:4px!important}
+  #dispatch-hud .dispatch-actions button{padding:5px 7px!important;font-size:10px!important}
+  #mobile-controls{z-index:9000!important}
+  #joystick{position:fixed!important;left:14px!important;bottom:74px!important}
+  .mobile-buttons{position:fixed!important;right:14px!important;bottom:74px!important;display:flex!important;flex-direction:column!important;gap:8px!important}
+  #drive-hud{left:50%!important;right:auto!important;bottom:70px!important;transform:translateX(-50%)!important;width:auto!important;min-width:92px!important;padding:6px 10px!important}
+  #drive-hud .hud-stat{display:none!important}
+  #drive-hud .speed strong{font-size:28px!important}
+  #boot-run-box.minimized{left:auto!important;right:14px!important;bottom:188px!important;width:auto!important}
+  .road-attribution{left:50%!important;right:auto!important;bottom:4px!important;transform:translateX(-50%)!important;max-width:94vw!important;white-space:nowrap!important;font-size:8px!important;padding:2px 5px!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  #dispatch-diagnostics{display:none!important}
+}
+@media(max-width:700px) and (orientation:landscape){
+  #street-card{top:8px!important;left:8px!important;width:170px!important}
+  #dispatch-hud{top:58px!important;left:8px!important;right:auto!important;width:220px!important}
+  #joystick{bottom:38px!important}
+  .mobile-buttons{bottom:38px!important}
+  #drive-hud{bottom:28px!important}
+  #boot-run-box.minimized{right:126px!important;bottom:38px!important}
+}
+  /* Pre-drive controls stay hidden until the player has selected a city. */
+  body:not([data-city-selected="true"]) #mobile-controls{display:none!important}
+</style></head>
+<body data-build="dispatch-prototype-v0.0.42">
+  <main id="app-shell">
+    <div id="cesium-container" aria-label="3D city simulator viewport"></div>
+
+    <header class="topbar compact-topbar">
+      <div class="brand-chip glass">
+        <p class="eyebrow">PROOF OF CONCEPT · TRAINING ONLY</p>
+        <h1>3D City Response Simulator</h1>
+      </div>
+      <div class="topbar-actions">
+        <div id="live-compass" aria-label="Current heading" style="min-width:42px;height:42px;display:grid;place-items:center;border-radius:50%;border:2px solid rgba(216,248,255,.8);background:rgba(4,15,25,.72);color:#fff;font:800 15px/1 system-ui;box-shadow:inset 0 0 0 2px rgba(255,255,255,.08)">N</div><button id="camera-cycle-button" class="camera-button" type="button" aria-label="Cycle camera view">CAM</button>
+        <span id="version-pill" class="pill">v0.0.8</span>
+        <button id="setup-button" class="icon-button" type="button" aria-label="Open simulator setup">⚙</button>
+      </div>
+    </header>
+
+    <section id="street-card" class="street-card glass" aria-live="polite">
+      <span class="street-label">CURRENT STREET / AREA</span>
+      <strong id="street-name">Waiting for road data…</strong>
+      <span id="road-status" class="road-state">Road data loading</span>
+    </section>
+
+    <section id="drive-hud" class="drive-hud glass" aria-label="Vehicle status">
+      <div class="speed"><strong id="speed-value">0</strong><span>km/h</span></div>
+      <div class="hud-stat"><span>Gear</span><strong id="gear-value">N</strong></div>
+      <div class="hud-stat"><span>Camera</span><strong id="camera-value">Standard chase · FOLLOW</strong></div>
+      <div class="hud-stat"><span>Spawn</span><strong id="station-value">Station 1</strong></div>
+    </section>
+
+    <section id="status-stack" class="status-stack" aria-live="polite">
+      <div id="tiles-status" class="status-chip">3D world: setup required</div>
+      <div id="surface-status" class="status-chip">Surface: waiting</div>
+    </section>
+
+    <button id="diagnostics-toggle" class="diagnostics-toggle glass" type="button">Diagnostics</button>
+    <aside id="diagnostics-panel" class="diagnostics-panel glass" hidden>
+      <div class="panel-title"><strong>Proof-of-concept diagnostics</strong><button id="diagnostics-close" type="button" aria-label="Close diagnostics">×</button></div>
+      <p class="field-help">Drive at least 50 m, drag the view, then press C/Recenter. Peterborough adds independent road matching; other Ontario cities are visual free-drive tests.</p>
+      <dl>
+        <div><dt>FPS</dt><dd id="diag-fps">—</dd></div>
+        <div><dt>Google tiles</dt><dd id="diag-tiles">Not loaded</dd></div>
+        <div><dt>Road graph</dt><dd id="diag-roads">Loading</dd></div>
+        <div><dt>Surface height</dt><dd id="diag-height">—</dd></div>
+        <div><dt>Road distance</dt><dd id="diag-road-distance">—</dd></div>
+        <div><dt>Position</dt><dd id="diag-position">—</dd></div>
+        <div><dt>Drive test</dt><dd id="diag-drive-test">○ drive 50 m</dd></div>
+        <div><dt>Camera test</dt><dd id="diag-camera-test">○ drag view, then recenter</dd></div>
+        <div><dt>Performance</dt><dd id="diag-performance-test">○ collecting FPS</dd></div>
+        <div><dt>Readiness</dt><dd id="diag-readiness">0/6 automatic checks passed</dd></div>
+      </dl>
+      <div class="diag-actions">
+        <button id="flip-model" type="button">Flip truck 180°</button>
+        <button id="reset-truck" type="button">Reset truck</button>
+        <button id="copy-validation-report" type="button">Copy validation report</button>
+      </div>
+    </aside>
+
+    <div id="desktop-hint" class="desktop-hint glass">
+      <span><kbd>W/S</kbd> drive</span><span><kbd>A/D</kbd> steer</span><span><kbd>Space</kbd> brake</span><span><kbd>C</kbd> recenter</span><span><kbd>V</kbd> camera</span><span>drag to look</span>
+    </div>
+
+    <div id="mobile-controls" class="mobile-controls" aria-label="Mobile driving controls">
+      <div id="joystick" class="joystick" role="application" aria-label="Driving joystick">
+        <div class="joystick-ring"><div id="joystick-knob" class="joystick-knob"></div></div>
+      </div>
+      <div class="mobile-buttons">
+        <button id="mobile-brake" class="mobile-action brake" type="button">BRAKE</button>
+        <button id="mobile-recenter" class="mobile-action" type="button">CENTER</button>
+      </div>
+    </div>
+
+    <section id="city-picker-overlay" class="city-picker-overlay" hidden aria-label="Ontario city selector">
+      <div class="city-picker-intro glass">
+        <p class="eyebrow">ONTARIO · GOD’S-EYE CITY SELECT</p>
+        <h2>Choose where to drive</h2>
+        <p id="city-picker-hint">Hover a city area or move around the map</p>
+      </div>
+
+      <div class="city-picker-crosshair" aria-hidden="true">
+        <span></span>
+      </div>
+
+      <div class="city-picker-dock glass">
+        <div class="city-picker-choice">
+          <span>Selected city</span>
+          <strong id="city-picker-name">Peterborough</strong>
+        </div>
+        <div class="city-picker-actions">
+          <button id="city-picker-back" class="secondary-button" type="button">Back</button>
+          <button id="city-picker-start" class="primary-button" type="button">Start in Peterborough</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="setup-overlay" class="setup-overlay">
+      <form id="setup-form" class="setup-card setup-card-v008" autocomplete="off">
+        <div class="setup-heading">
+          <div>
+            <p class="eyebrow">VERSION 0.0.42 · DISPATCH INTEGRATION PROTOTYPE</p>
+            <h2>Google 3D Driving Test</h2>
+          </div>
+          <span class="prototype-badge">Prototype</span>
+        </div>
+        <p class="setup-copy">This is the isolated dispatch-integration build. The production v0.0.8 simulator remains unchanged. Choose camera and quality, then continue into the Ontario city selector.</p>
+
+        <label for="api-key">Google Maps Platform API key</label>
+        <input id="api-key" name="apiKey" type="password" inputmode="text" placeholder="Paste a Google Maps Platform API key" required>
+        <p class="field-help">Map Tiles API is required for the 3D driving world. The key stays in this browser tab and is never committed to GitHub.</p>
+
+        <div class="form-grid setup-grid-v008">
+          <label>Camera view
+            <select id="camera-select" name="camera">
+              <option value="cab">Cab POV</option>
+              <option value="close">Close chase</option>
+              <option value="chase" selected>Standard chase</option>
+              <option value="wide">Wide chase</option>
+              <option value="high">High angle</option>
+              <option value="tactical">Tactical overhead</option>
+              <option value="birdsEye">Bird’s-eye · GTA</option>
+            </select>
+          </label>
+          <label>3D quality
+            <select id="quality-select" name="quality">
+              <option value="performance">Performance</option>
+              <option value="balanced" selected>Balanced</option>
+              <option value="high">High detail</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="setup-error" class="setup-error" role="alert" hidden></div>
+        <button id="launch-button" class="primary-button" type="submit">Launch 3D Demo</button>
+        <button id="resume-button" class="primary-button resume-button" type="button" hidden>Resume driving</button>
+        <div class="setup-links">
+          <a href="https://console.cloud.google.com/google/maps-apis/api-list" target="_blank" rel="noopener noreferrer">Google Cloud API setup ↗</a>
+          <a href="https://developers.google.com/maps/documentation/tile/3d-tiles" target="_blank" rel="noopener noreferrer">3D Tiles documentation ↗</a>
+        </div>
+        <p class="legal-note">Training/simulation prototype only. Not for live emergency navigation. Google attribution remains on-screen. Peterborough has independent road/street matching; other Ontario cities currently use Google only as the visual world.</p>
+      </form>
+    </section>
+  </main>
+  <a class="road-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Peterborough roads © OpenStreetMap contributors</a>
+
+  <style>
+    #boot-run-box{position:fixed;z-index:2147483647;left:8px;right:8px;bottom:8px;max-height:30vh;overflow:auto;background:#02080df5;color:#c8efff;border:2px solid #4aa7d4;border-radius:10px;padding:8px;font:11px/1.35 monospace}
+    #boot-run-box.minimized{left:auto;right:8px;bottom:96px;width:auto;max-height:none;overflow:hidden;padding:0;border-radius:8px}
+    #boot-run-box.minimized #boot-run-log,#boot-run-box.minimized header>b,#boot-run-box.minimized #boot-copy{display:none} #boot-run-box.minimized header{background:transparent} #boot-run-box.minimized .boot-actions{gap:0} #boot-run-box.minimized #boot-min{padding:6px 9px}
+    #boot-run-box header{display:flex;justify-content:space-between;gap:8px;position:sticky;top:0;background:#02080d}
+    #boot-run-box .boot-actions{display:flex;gap:6px}
+    #boot-run-box button{background:#15394c;color:white;border:1px solid #5798b9;border-radius:6px;padding:4px 10px}
+    #boot-run-log{white-space:pre-wrap;margin:5px 0 0;user-select:text} @media(max-width:600px){#boot-run-box{max-height:24vh;font-size:10px;left:6px;right:6px;bottom:6px}#boot-run-box button{padding:3px 7px}}
+  </style>
+  <aside id="boot-run-box"><header><b>RUN DIAGNOSTICS v0.0.42</b><span class="boot-actions"><button id="boot-min" type="button">MINIMIZE</button><button id="boot-copy" type="button">COPY</button></span></header><pre id="boot-run-log">[BOOT] HTML loaded\n</pre></aside>
+  <script>
+  (()=>{const box=document.getElementById('boot-run-box'),out=document.getElementById('boot-run-log');const safe=v=>{let x=String(v??'');x=x.replace(/AIza[0-9A-Za-z_+\/-]{15,}/gi,'[API KEY REDACTED]');x=x.replace(/([?&](?:apiKey|key)=)[^&#\s]*/gi,'$1[REDACTED]');x=x.replace(/(api[-_ ]?key\s*[:=]\s*)\S+/gi,'$1[REDACTED]');return x};const log=(m)=>{out.textContent+='['+new Date().toLocaleTimeString()+'] '+safe(m)+'\\n';out.scrollTop=out.scrollHeight};window.__BOOT_RUN_LOG__=log;
+  const min=document.getElementById('boot-min');min.onclick=()=>{box.classList.toggle('minimized');min.textContent=box.classList.contains('minimized')?'EXPAND':'MINIMIZE';log('UI diagnostics '+(box.classList.contains('minimized')?'minimized':'expanded'))};
+  addEventListener('error',e=>log('ERROR '+safe(e.message||e.error?.stack||'unknown')+' @ '+safe(e.filename||'')+':'+(e.lineno||'')));
+  addEventListener('unhandledrejection',e=>log('PROMISE '+String(e.reason?.stack||e.reason||'unknown')));
+  const nativeFetch=window.fetch.bind(window);window.fetch=async(...args)=>{const u=String(args[0]?.url||args[0]);log('FETCH '+u);try{const r=await nativeFetch(...args);log('FETCH '+r.status+' '+u);return r}catch(e){log('FETCH ERROR '+u+' :: '+e.message);throw e}};
+  const nativeAppend=Element.prototype.appendChild;Element.prototype.appendChild=function(node){if(node?.tagName==='SCRIPT'&&node.src)log('SCRIPT LOAD '+node.src);return nativeAppend.call(this,node)};
+  document.addEventListener('click',e=>{const t=e.target?.closest?.('button,a,[role="button"]');if(t)log('BUTTON '+(t.id||t.dataset?.mode||t.dataset?.service||t.dataset?.base||t.textContent?.trim()?.slice(0,80)||t.tagName))},true);
+  document.addEventListener('submit',e=>log('FORM SUBMIT '+(e.target?.id||e.target?.tagName||'unknown')+' (API key not logged)'),true);
+  addEventListener('dispatch-prototype-data-ready',e=>log('EVENT dispatch-prototype-data-ready '+JSON.stringify(e.detail)));
+  addEventListener('dispatch-base-selected',e=>log('EVENT dispatch-base-selected '+JSON.stringify(e.detail)));
+  addEventListener('city-dispatch-spawned',e=>log('EVENT city-dispatch-spawned '+JSON.stringify(e.detail)));
+  document.getElementById('boot-copy').onclick=()=>navigator.clipboard.writeText(safe(out.textContent)).then(()=>log('COPIED sanitized diagnostics')).catch(e=>log('COPY ERROR '+e.message));
+  document.getElementById('setup-form')?.addEventListener('submit',()=>{setTimeout(()=>{const st=window.__CITY_DEMO_RUNTIME__?.snapshot?.();log('2.5s STATE cityRuntime='+!!window.__CITY_DEMO_RUNTIME__+' dispatchMode='+!!window.__DISPATCH_MODE_RUNTIME__+' picker='+!!st?.pickerActive+' city='+(st?.selectedCity||'none'));},2500)},true);
+  log('Diagnostic logger armed BEFORE Cesium/modules; buttons, fetches, scripts, events and runtime errors will be recorded');
+  })();
+  </script>
+  <script>
+    (()=>{
+      const markCitySelected=()=>document.body.setAttribute('data-city-selected','true');
+      document.getElementById('city-picker-start')?.addEventListener('click',markCitySelected);
+      addEventListener('city-dispatch-spawned',markCitySelected);
+    })();
+  </script>
+  <script>window.CESIUM_BASE_URL = 'https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/';</script>
+  <script src="https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/Cesium.js"></script>
+  <script>
+    (() => {
+      const Cesium = window.Cesium;
+      if (!Cesium) return;
+      if (Cesium.RequestScheduler?.requestsByServer) Cesium.RequestScheduler.requestsByServer['tile.googleapis.com:443'] = 18;
+      window.GOOGLE_TILESET_OPTIONS = Object.freeze({ showCreditsOnScreen: true });
+    })();
+  </script>
+  <script type="module" src="./app-dispatch-v0.0.42.js?v=0.0.42"></script>
+  <script src="./validation.js?v=0.0.8"></script>
+</body>
+</html>
