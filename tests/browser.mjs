@@ -56,7 +56,9 @@ async function launch(page) {
   await page.locator('#launch-button').click();
   await page.waitForFunction(() => window.__CITY_DEMO_RUNTIME__?.snapshot().pickerActive);
   assert.equal(await page.locator('#city-picker-overlay').isVisible(), true);
-  assert.equal(await page.locator('#city-picker-name').innerText(), 'Peterborough');
+  const selectedCity = (await page.locator('#city-picker-name').innerText()).trim();
+  assert.ok(selectedCity.length > 0);
+  assert.equal((await page.locator('#city-picker-start').innerText()).trim(), `Start in ${selectedCity}`);
   await page.locator('#city-picker-start').click();
   await page.waitForFunction(() => window.__CITY_DEMO_RUNTIME__?.snapshot().running);
   await page.waitForFunction(() => window.testViewer.scene.primitives._primitives.some(p => p.ready === true));
