@@ -1,16 +1,24 @@
-# 3D City Google Simulator — v0.0.7
+# 3D City Google Simulator — v0.0.8
 
 A focused proof of concept for a future commercial firefighter/EMS street-knowledge simulator. The demo streams **Google Photorealistic 3D Tiles** through **CesiumJS**, then layers independent vehicle physics, road matching, controls, and training-oriented UI over the visual city.
 
-## Play v0.0.7
+## Play v0.0.8
 
-Open https://edmondsonedits.github.io/3D-City-Google-Simulator/ and enter your own Map Tiles API key. Choose Station 1 and launch. The key needs billing, Map Tiles API access, and website restrictions allowing that address. No Google key ships with the game.
+Open https://edmondsonedits.github.io/3D-City-Google-Simulator/ and enter your own Map Tiles API key. Choose camera and quality, launch the Ontario city picker, select a city, then start driving. The key needs billing, Map Tiles API access, and website restrictions allowing that address. No Google key ships with the game.
 
 Locally, run `npm start` and open http://127.0.0.1:4173/. Allow that address in your key restrictions. Desktop: W/S, A/D, Space, C. Mobile: joystick, Brake, Recenter. Setup pauses the drive; Resume returns without rebuilding the city.
 
 This release corrects truck orientation, chase-camera placement, direct Google credit configuration, low-FPS integration, truck self-sampling, stale surface requests, off-road classification, mobile touch release/recenter and validation false positives. It bundles the existing independent roads and pumper. See [AUDIT.md](AUDIT.md), [ASSETS.md](ASSETS.md) and [RELEASE_REPORT.md](RELEASE_REPORT.md).
 
 The Google driving milestone is **awaiting real-key visual validation**. Automated browser tests use real Cesium, the real model and road graph with a synthetic surface/tileset fixture. They do not validate Google's city, bridge decks, grounding or FPS.
+
+## v0.0.8 Ontario God’s-eye city picker
+
+The setup screen is simplified to **API key, camera view, and 3D quality**. Launching now opens an Ontario-wide interactive Cesium map before the 3D driving world loads.
+
+The picker contains Ontario city selection regions and labels. Desktop users hover or click city areas. On phones/tablets, the map pans and zooms underneath a fixed centre cursor, and the city nearest the centre is selected automatically. The bottom dock always shows the selected city and provides **Back** and **Start in [city]** controls.
+
+Starting a city uses a two-stage transition: the Ontario camera flies down toward the selected city, then the Google Photorealistic 3D world loads and the driving camera smoothly returns from a high overview into the chosen camera preset. Peterborough still enables the independent road graph; other cities remain Google-only visual free-drive mode.
 
 ## v0.0.7 camera, address spawn, and recovery
 
