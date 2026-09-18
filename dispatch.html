@@ -11,8 +11,8 @@
   <link rel="stylesheet" href="./styles.css?v=0.0.8">
   <link rel="stylesheet" href="./features-v0.0.8.css?v=0.0.8">
   <style>
-    body[data-build="dispatch-prototype-v0.0.34"]::before{
-      content:"DISPATCH PROTOTYPE · v0.0.34";
+    body[data-build="dispatch-prototype-v0.0.35"]::before{
+      content:"DISPATCH PROTOTYPE · v0.0.35";
       position:fixed;z-index:9999;left:10px;bottom:8px;
       padding:5px 8px;border-radius:999px;
       font:800 9px/1 system-ui;letter-spacing:.08em;
@@ -21,9 +21,9 @@
       pointer-events:none;backdrop-filter:blur(6px)
     }
   </style>
-<style id="dispatch-responsive-layout-v034">
+<style id="dispatch-responsive-layout-v035">
 /* Dedicated mobile HUD zones: top info, bottom-left drive, bottom-center speed, bottom-right actions. */
-body[data-build="dispatch-prototype-v0.0.34"]::before{display:none!important}
+body[data-build="dispatch-prototype-v0.0.35"]::before{display:none!important}
 @media(max-width:700px){
   .compact-topbar{top:8px!important;left:8px!important;right:8px!important}
   #street-card{top:72px!important;left:8px!important;right:auto!important;width:min(46vw,190px)!important;padding:7px 9px!important}
@@ -57,7 +57,7 @@ body[data-build="dispatch-prototype-v0.0.34"]::before{display:none!important}
   /* Pre-drive controls stay hidden until the player has selected a city. */
   body:not([data-city-selected="true"]) #mobile-controls{display:none!important}
 </style></head>
-<body data-build="dispatch-prototype-v0.0.34">
+<body data-build="dispatch-prototype-v0.0.35">
   <main id="app-shell">
     <div id="cesium-container" aria-label="3D city simulator viewport"></div>
 
@@ -155,7 +155,7 @@ body[data-build="dispatch-prototype-v0.0.34"]::before{display:none!important}
       <form id="setup-form" class="setup-card setup-card-v008" autocomplete="off">
         <div class="setup-heading">
           <div>
-            <p class="eyebrow">VERSION 0.0.34 · DISPATCH INTEGRATION PROTOTYPE</p>
+            <p class="eyebrow">VERSION 0.0.35 · DISPATCH INTEGRATION PROTOTYPE</p>
             <h2>Google 3D Driving Test</h2>
           </div>
           <span class="prototype-badge">Prototype</span>
@@ -209,7 +209,7 @@ body[data-build="dispatch-prototype-v0.0.34"]::before{display:none!important}
     #boot-run-box button{background:#15394c;color:white;border:1px solid #5798b9;border-radius:6px;padding:4px 10px}
     #boot-run-log{white-space:pre-wrap;margin:5px 0 0;user-select:text} @media(max-width:600px){#boot-run-box{max-height:24vh;font-size:10px;left:6px;right:6px;bottom:6px}#boot-run-box button{padding:3px 7px}}
   </style>
-  <aside id="boot-run-box"><header><b>RUN DIAGNOSTICS v0.0.34</b><span class="boot-actions"><button id="boot-min" type="button">MINIMIZE</button><button id="boot-copy" type="button">COPY</button></span></header><pre id="boot-run-log">[BOOT] HTML loaded\n</pre></aside>
+  <aside id="boot-run-box"><header><b>RUN DIAGNOSTICS v0.0.35</b><span class="boot-actions"><button id="boot-min" type="button">MINIMIZE</button><button id="boot-copy" type="button">COPY</button></span></header><pre id="boot-run-log">[BOOT] HTML loaded\n</pre></aside>
   <script>
   (()=>{const box=document.getElementById('boot-run-box'),out=document.getElementById('boot-run-log');const safe=v=>{let x=String(v??'');x=x.replace(/AIza[0-9A-Za-z_+\/-]{15,}/gi,'[API KEY REDACTED]');x=x.replace(/([?&](?:apiKey|key)=)[^&#\s]*/gi,'$1[REDACTED]');x=x.replace(/(api[-_ ]?key\s*[:=]\s*)\S+/gi,'$1[REDACTED]');return x};const log=(m)=>{out.textContent+='['+new Date().toLocaleTimeString()+'] '+safe(m)+'\\n';out.scrollTop=out.scrollHeight};window.__BOOT_RUN_LOG__=log;
   const min=document.getElementById('boot-min');min.onclick=()=>{box.classList.toggle('minimized');min.textContent=box.classList.contains('minimized')?'EXPAND':'MINIMIZE';log('UI diagnostics '+(box.classList.contains('minimized')?'minimized':'expanded'))};
@@ -244,7 +244,7 @@ body[data-build="dispatch-prototype-v0.0.34"]::before{display:none!important}
       window.GOOGLE_TILESET_OPTIONS = Object.freeze({ showCreditsOnScreen: true });
     })();
   </script>
-  <script type="module" src="./app-dispatch-v0.0.34.js?v=0.0.34"></script>
+  <script type="module" src="./app-dispatch-v0.0.35.js?v=0.0.35"></script>
   <script src="./validation.js?v=0.0.8"></script>
 </body>
 </html>
