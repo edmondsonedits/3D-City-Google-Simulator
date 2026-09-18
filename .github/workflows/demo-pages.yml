@@ -26,6 +26,12 @@ jobs:
           node-version: '22'
       - name: Run vehicle physics tests
         run: npm test
+      - name: Validate dispatch prototype modules
+        run: |
+          node --check app-dispatch-v0.0.15.js
+          node --check dispatch/ems-transport-v0.0.15.js
+          node --check dispatch/incident-spatial-v0.0.14.js
+          node --check dispatch/dispatch-gameplay-v0.0.13.js
       - name: Install browser tests
         run: npm ci
       - name: Install Chromium
