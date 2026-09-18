@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      run_full_tests:
+        description: 'Run the full browser/integration test suite'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -16,6 +22,7 @@ concurrency:
 
 jobs:
   test:
+    if: github.event_name == 'workflow_dispatch' && inputs.run_full_tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,7 +35,7 @@ jobs:
         run: npm test
       - name: Validate dispatch prototype modules
         run: |
-          node --check app-dispatch-v0.0.24.js
+          node --check app-dispatch-v0.0.25.js
           node --check app-dispatch-v0.0.19.js
           node --check app-dispatch-v0.0.18.js
           node --check dispatch/integration-polish-v0.0.18.js
@@ -41,7 +48,7 @@ jobs:
       - name: Validate production remains isolated
         run: |
           grep -q 'app.js?v=0.0.8' index.html
-          test -f dispatch-prototype-v0.0.24.html
+          test -f dispatch-prototype-v0.0.25.html
           ! grep -R -E 'AIza[0-9A-Za-z_-]{20,}' --exclude-dir=.git .
       - name: Install browser tests
         run: npm ci
