@@ -11,8 +11,8 @@
   <link rel="stylesheet" href="./styles.css?v=0.0.8">
   <link rel="stylesheet" href="./features-v0.0.8.css?v=0.0.8">
   <style>
-    body[data-build="dispatch-prototype-v0.0.29"]::before{
-      content:"DISPATCH PROTOTYPE · v0.0.29";
+    body[data-build="dispatch-prototype-v0.0.30"]::before{
+      content:"DISPATCH PROTOTYPE · v0.0.30";
       position:fixed;z-index:9999;left:10px;bottom:8px;
       padding:5px 8px;border-radius:999px;
       font:800 9px/1 system-ui;letter-spacing:.08em;
@@ -22,7 +22,7 @@
     }
   </style>
 </head>
-<body data-build="dispatch-prototype-v0.0.29">
+<body data-build="dispatch-prototype-v0.0.30">
   <main id="app-shell">
     <div id="cesium-container" aria-label="3D city simulator viewport"></div>
 
@@ -32,7 +32,7 @@
         <h1>3D City Response Simulator</h1>
       </div>
       <div class="topbar-actions">
-        <button id="camera-cycle-button" class="camera-button" type="button" aria-label="Cycle camera view">CAM</button>
+        <div id="live-compass" aria-label="Current heading" style="min-width:42px;height:42px;display:grid;place-items:center;border-radius:50%;border:2px solid rgba(216,248,255,.8);background:rgba(4,15,25,.72);color:#fff;font:800 15px/1 system-ui;box-shadow:inset 0 0 0 2px rgba(255,255,255,.08)">N</div><button id="camera-cycle-button" class="camera-button" type="button" aria-label="Cycle camera view">CAM</button>
         <span id="version-pill" class="pill">v0.0.8</span>
         <button id="setup-button" class="icon-button" type="button" aria-label="Open simulator setup">⚙</button>
       </div>
@@ -120,7 +120,7 @@
       <form id="setup-form" class="setup-card setup-card-v008" autocomplete="off">
         <div class="setup-heading">
           <div>
-            <p class="eyebrow">VERSION 0.0.29 · DISPATCH INTEGRATION PROTOTYPE</p>
+            <p class="eyebrow">VERSION 0.0.30 · DISPATCH INTEGRATION PROTOTYPE</p>
             <h2>Google 3D Driving Test</h2>
           </div>
           <span class="prototype-badge">Prototype</span>
@@ -167,14 +167,14 @@
 
   <style>
     #boot-run-box{position:fixed;z-index:2147483647;left:8px;right:8px;bottom:8px;max-height:30vh;overflow:auto;background:#02080df5;color:#c8efff;border:2px solid #4aa7d4;border-radius:10px;padding:8px;font:11px/1.35 monospace}
-    #boot-run-box.minimized{left:auto;right:8px;width:auto;max-height:none;overflow:hidden;padding:6px}
-    #boot-run-box.minimized #boot-run-log{display:none}
+    #boot-run-box.minimized{left:auto;right:8px;bottom:96px;width:auto;max-height:none;overflow:hidden;padding:0;border-radius:8px}
+    #boot-run-box.minimized #boot-run-log,#boot-run-box.minimized header>b,#boot-run-box.minimized #boot-copy{display:none} #boot-run-box.minimized header{background:transparent} #boot-run-box.minimized .boot-actions{gap:0} #boot-run-box.minimized #boot-min{padding:6px 9px}
     #boot-run-box header{display:flex;justify-content:space-between;gap:8px;position:sticky;top:0;background:#02080d}
     #boot-run-box .boot-actions{display:flex;gap:6px}
     #boot-run-box button{background:#15394c;color:white;border:1px solid #5798b9;border-radius:6px;padding:4px 10px}
     #boot-run-log{white-space:pre-wrap;margin:5px 0 0;user-select:text} @media(max-width:600px){#boot-run-box{max-height:24vh;font-size:10px;left:6px;right:6px;bottom:6px}#boot-run-box button{padding:3px 7px}}
   </style>
-  <aside id="boot-run-box"><header><b>RUN DIAGNOSTICS v0.0.29</b><span class="boot-actions"><button id="boot-min" type="button">MINIMIZE</button><button id="boot-copy" type="button">COPY</button></span></header><pre id="boot-run-log">[BOOT] HTML loaded\n</pre></aside>
+  <aside id="boot-run-box"><header><b>RUN DIAGNOSTICS v0.0.30</b><span class="boot-actions"><button id="boot-min" type="button">MINIMIZE</button><button id="boot-copy" type="button">COPY</button></span></header><pre id="boot-run-log">[BOOT] HTML loaded\n</pre></aside>
   <script>
   (()=>{const box=document.getElementById('boot-run-box'),out=document.getElementById('boot-run-log');const safe=v=>{let x=String(v??'');x=x.replace(/AIza[0-9A-Za-z_+\/-]{15,}/gi,'[API KEY REDACTED]');x=x.replace(/([?&](?:apiKey|key)=)[^&#\s]*/gi,'$1[REDACTED]');x=x.replace(/(api[-_ ]?key\s*[:=]\s*)\S+/gi,'$1[REDACTED]');return x};const log=(m)=>{out.textContent+='['+new Date().toLocaleTimeString()+'] '+safe(m)+'\\n';out.scrollTop=out.scrollHeight};window.__BOOT_RUN_LOG__=log;
   const min=document.getElementById('boot-min');min.onclick=()=>{box.classList.toggle('minimized');min.textContent=box.classList.contains('minimized')?'EXPAND':'MINIMIZE';log('UI diagnostics '+(box.classList.contains('minimized')?'minimized':'expanded'))};
@@ -202,7 +202,7 @@
       window.GOOGLE_TILESET_OPTIONS = Object.freeze({ showCreditsOnScreen: true });
     })();
   </script>
-  <script type="module" src="./app-dispatch-v0.0.29.js?v=0.0.29"></script>
+  <script type="module" src="./app-dispatch-v0.0.30.js?v=0.0.30"></script>
   <script src="./validation.js?v=0.0.8"></script>
 </body>
 </html>
