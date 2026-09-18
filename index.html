@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#071019">
   <meta name="description" content="Google Photorealistic 3D Tiles emergency vehicle driving proof of concept.">
-  <title>3D City Response Simulator — v0.0.7</title>
+  <title>3D City Response Simulator — v0.0.8</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/Widgets/widgets.css">
-  <link rel="stylesheet" href="./styles.css?v=0.0.7">
-  <link rel="stylesheet" href="./features-v0.0.7.css?v=0.0.7">
+  <link rel="stylesheet" href="./styles.css?v=0.0.8">
+  <link rel="stylesheet" href="./features-v0.0.8.css?v=0.0.8">
 </head>
 <body>
   <main id="app-shell">
@@ -22,7 +22,7 @@
       </div>
       <div class="topbar-actions">
         <button id="camera-cycle-button" class="camera-button" type="button" aria-label="Cycle camera view">CAM</button>
-        <span id="version-pill" class="pill">v0.0.7</span>
+        <span id="version-pill" class="pill">v0.0.8</span>
         <button id="setup-button" class="icon-button" type="button" aria-label="Open simulator setup">⚙</button>
       </div>
     </header>
@@ -82,30 +82,45 @@
       </div>
     </div>
 
+    <section id="city-picker-overlay" class="city-picker-overlay" hidden aria-label="Ontario city selector">
+      <div class="city-picker-intro glass">
+        <p class="eyebrow">ONTARIO · GOD’S-EYE CITY SELECT</p>
+        <h2>Choose where to drive</h2>
+        <p id="city-picker-hint">Hover a city area or move around the map</p>
+      </div>
+
+      <div class="city-picker-crosshair" aria-hidden="true">
+        <span></span>
+      </div>
+
+      <div class="city-picker-dock glass">
+        <div class="city-picker-choice">
+          <span>Selected city</span>
+          <strong id="city-picker-name">Peterborough</strong>
+        </div>
+        <div class="city-picker-actions">
+          <button id="city-picker-back" class="secondary-button" type="button">Back</button>
+          <button id="city-picker-start" class="primary-button" type="button">Start in Peterborough</button>
+        </div>
+      </div>
+    </section>
+
     <section id="setup-overlay" class="setup-overlay">
-      <form id="setup-form" class="setup-card" autocomplete="off">
+      <form id="setup-form" class="setup-card setup-card-v008" autocomplete="off">
         <div class="setup-heading">
           <div>
-            <p class="eyebrow">VERSION 0.0.7 · ONTARIO 3D DEMO</p>
+            <p class="eyebrow">VERSION 0.0.8 · ONTARIO 3D DEMO</p>
             <h2>Google 3D Driving Test</h2>
           </div>
           <span class="prototype-badge">Prototype</span>
         </div>
-        <p class="setup-copy">Start at a Peterborough fire station or type any Ontario city/town. Choose a camera view, then drive through Google’s photorealistic 3D world.</p>
+        <p class="setup-copy">Choose how the simulator should look. After launch, pick your city from an interactive Ontario map, then zoom directly into the truck.</p>
 
         <label for="api-key">Google Maps Platform API key</label>
         <input id="api-key" name="apiKey" type="password" inputmode="text" placeholder="Paste a Google Maps Platform API key" required>
-        <p class="field-help">Map Tiles API is required. Ontario city search also requires Maps JavaScript API on the same key. The key stays in this browser tab and is never committed to GitHub.</p>
+        <p class="field-help">Map Tiles API is required for the 3D driving world. The key stays in this browser tab and is never committed to GitHub.</p>
 
-        <div class="form-grid setup-grid-v007">
-          <label>Starting location
-            <select id="station-select" name="station">
-              <option value="station1">Peterborough Station 1 — Sherbrooke St.</option>
-              <option value="station2">Peterborough Station 2 — Marina Blvd.</option>
-              <option value="station3">Peterborough Station 3 — Clonsilla Ave.</option>
-              <option value="ontario">Choose an Ontario city / town…</option>
-            </select>
-          </label>
+        <div class="form-grid setup-grid-v008">
           <label>Camera view
             <select id="camera-select" name="camera">
               <option value="cab">Cab POV</option>
@@ -125,26 +140,6 @@
             </select>
           </label>
         </div>
-
-        <div id="custom-city-field" class="custom-city-field" hidden>
-          <label for="ontario-city-input">Ontario city or town</label>
-          <input id="ontario-city-input" name="ontarioCity" type="text" placeholder="e.g. Toronto, Ottawa, Kingston, Sudbury">
-          <p class="field-help">Search is submitted only when you launch. The result must resolve to Ontario, Canada.</p>
-        </div>
-
-        <details id="spawn-tools" class="spawn-tools">
-          <summary>Spawn & recovery tools</summary>
-          <div class="spawn-tools-body">
-            <label for="spawn-address">Spawn at an Ontario address</label>
-            <div class="spawn-address-row">
-              <input id="spawn-address" type="text" inputmode="text" placeholder="e.g. 123 George St N, Peterborough">
-              <button id="spawn-address-button" class="secondary-button" type="button">Spawn here</button>
-            </div>
-            <p class="field-help">Uses the same Google Maps JavaScript API geocoder as city search. Ontario addresses only.</p>
-            <button id="recover-surface-button" class="secondary-button recover-button" type="button">Recover truck to surface</button>
-            <p id="spawn-tool-status" class="spawn-tool-status" aria-live="polite">Use recovery if the truck appears below the rendered ground.</p>
-          </div>
-        </details>
 
         <div id="setup-error" class="setup-error" role="alert" hidden></div>
         <button id="launch-button" class="primary-button" type="submit">Launch 3D Demo</button>
@@ -169,7 +164,7 @@
       window.GOOGLE_TILESET_OPTIONS = Object.freeze({ showCreditsOnScreen: true });
     })();
   </script>
-  <script type="module" src="./app.js?v=0.0.7"></script>
-  <script src="./validation.js?v=0.0.7"></script>
+  <script type="module" src="./app.js?v=0.0.8"></script>
+  <script src="./validation.js?v=0.0.8"></script>
 </body>
 </html>
