@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#071019">
+  <meta name="description" content="Google Photorealistic 3D Tiles emergency vehicle driving proof of concept.">
+  <title>3D City Response Simulator — Dispatch Prototype v0.0.22</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/Widgets/widgets.css">
+  <link rel="stylesheet" href="./styles.css?v=0.0.8">
+  <link rel="stylesheet" href="./features-v0.0.8.css?v=0.0.8">
+  <style>
+    body[data-build="dispatch-prototype-v0.0.22"]::before{
+      content:"DISPATCH PROTOTYPE · v0.0.22";
+      position:fixed;z-index:9999;left:10px;bottom:8px;
+      padding:5px 8px;border-radius:999px;
+      font:800 9px/1 system-ui;letter-spacing:.08em;
+      color:#d8f8ff;background:rgba(4,15,25,.72);
+      border:1px solid rgba(116,211,255,.35);
+      pointer-events:none;backdrop-filter:blur(6px)
+    }
+  </style>
+</head>
+<body data-build="dispatch-prototype-v0.0.22">
+  <main id="app-shell">
+    <div id="cesium-container" aria-label="3D city simulator viewport"></div>
+
+    <header class="topbar compact-topbar">
+      <div class="brand-chip glass">
+        <p class="eyebrow">PROOF OF CONCEPT · TRAINING ONLY</p>
+        <h1>3D City Response Simulator</h1>
+      </div>
+      <div class="topbar-actions">
+        <button id="camera-cycle-button" class="camera-button" type="button" aria-label="Cycle camera view">CAM</button>
+        <span id="version-pill" class="pill">v0.0.8</span>
+        <button id="setup-button" class="icon-button" type="button" aria-label="Open simulator setup">⚙</button>
+      </div>
+    </header>
+
+    <section id="street-card" class="street-card glass" aria-live="polite">
+      <span class="street-label">CURRENT STREET / AREA</span>
+      <strong id="street-name">Waiting for road data…</strong>
+      <span id="road-status" class="road-state">Road data loading</span>
+    </section>
+
+    <section id="drive-hud" class="drive-hud glass" aria-label="Vehicle status">
+      <div class="speed"><strong id="speed-value">0</strong><span>km/h</span></div>
+      <div class="hud-stat"><span>Gear</span><strong id="gear-value">N</strong></div>
+      <div class="hud-stat"><span>Camera</span><strong id="camera-value">Standard chase · FOLLOW</strong></div>
+      <div class="hud-stat"><span>Spawn</span><strong id="station-value">Station 1</strong></div>
+    </section>
+
+    <section id="status-stack" class="status-stack" aria-live="polite">
+      <div id="tiles-status" class="status-chip">3D world: setup required</div>
+      <div id="surface-status" class="status-chip">Surface: waiting</div>
+    </section>
+
+    <button id="diagnostics-toggle" class="diagnostics-toggle glass" type="button">Diagnostics</button>
+    <aside id="diagnostics-panel" class="diagnostics-panel glass" hidden>
+      <div class="panel-title"><strong>Proof-of-concept diagnostics</strong><button id="diagnostics-close" type="button" aria-label="Close diagnostics">×</button></div>
+      <p class="field-help">Drive at least 50 m, drag the view, then press C/Recenter. Peterborough adds independent road matching; other Ontario cities are visual free-drive tests.</p>
+      <dl>
+        <div><dt>FPS</dt><dd id="diag-fps">—</dd></div>
+        <div><dt>Google tiles</dt><dd id="diag-tiles">Not loaded</dd></div>
+        <div><dt>Road graph</dt><dd id="diag-roads">Loading</dd></div>
+        <div><dt>Surface height</dt><dd id="diag-height">—</dd></div>
+        <div><dt>Road distance</dt><dd id="diag-road-distance">—</dd></div>
+        <div><dt>Position</dt><dd id="diag-position">—</dd></div>
+        <div><dt>Drive test</dt><dd id="diag-drive-test">○ drive 50 m</dd></div>
+        <div><dt>Camera test</dt><dd id="diag-camera-test">○ drag view, then recenter</dd></div>
+        <div><dt>Performance</dt><dd id="diag-performance-test">○ collecting FPS</dd></div>
+        <div><dt>Readiness</dt><dd id="diag-readiness">0/6 automatic checks passed</dd></div>
+      </dl>
+      <div class="diag-actions">
+        <button id="flip-model" type="button">Flip truck 180°</button>
+        <button id="reset-truck" type="button">Reset truck</button>
+        <button id="copy-validation-report" type="button">Copy validation report</button>
+      </div>
+    </aside>
+
+    <div id="desktop-hint" class="desktop-hint glass">
+      <span><kbd>W/S</kbd> drive</span><span><kbd>A/D</kbd> steer</span><span><kbd>Space</kbd> brake</span><span><kbd>C</kbd> recenter</span><span><kbd>V</kbd> camera</span><span>drag to look</span>
+    </div>
+
+    <div id="mobile-controls" class="mobile-controls" aria-label="Mobile driving controls">
+      <div id="joystick" class="joystick" role="application" aria-label="Driving joystick">
+        <div class="joystick-ring"><div id="joystick-knob" class="joystick-knob"></div></div>
+      </div>
+      <div class="mobile-buttons">
+        <button id="mobile-brake" class="mobile-action brake" type="button">BRAKE</button>
+        <button id="mobile-recenter" class="mobile-action" type="button">CENTER</button>
+      </div>
+    </div>
+
+    <section id="city-picker-overlay" class="city-picker-overlay" hidden aria-label="Ontario city selector">
+      <div class="city-picker-intro glass">
+        <p class="eyebrow">ONTARIO · GOD’S-EYE CITY SELECT</p>
+        <h2>Choose where to drive</h2>
+        <p id="city-picker-hint">Hover a city area or move around the map</p>
+      </div>
+
+      <div class="city-picker-crosshair" aria-hidden="true">
+        <span></span>
+      </div>
+
+      <div class="city-picker-dock glass">
+        <div class="city-picker-choice">
+          <span>Selected city</span>
+          <strong id="city-picker-name">Peterborough</strong>
+        </div>
+        <div class="city-picker-actions">
+          <button id="city-picker-back" class="secondary-button" type="button">Back</button>
+          <button id="city-picker-start" class="primary-button" type="button">Start in Peterborough</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="setup-overlay" class="setup-overlay">
+      <form id="setup-form" class="setup-card setup-card-v008" autocomplete="off">
+        <div class="setup-heading">
+          <div>
+            <p class="eyebrow">VERSION 0.0.22 · DISPATCH INTEGRATION PROTOTYPE</p>
+            <h2>Google 3D Driving Test</h2>
+          </div>
+          <span class="prototype-badge">Prototype</span>
+        </div>
+        <p class="setup-copy">This is the isolated dispatch-integration build. The production v0.0.8 simulator remains unchanged. Choose camera and quality, then continue into the Ontario city selector.</p>
+
+        <label for="api-key">Google Maps Platform API key</label>
+        <input id="api-key" name="apiKey" type="password" inputmode="text" placeholder="Paste a Google Maps Platform API key" required>
+        <p class="field-help">Map Tiles API is required for the 3D driving world. The key stays in this browser tab and is never committed to GitHub.</p>
+
+        <div class="form-grid setup-grid-v008">
+          <label>Camera view
+            <select id="camera-select" name="camera">
+              <option value="cab">Cab POV</option>
+              <option value="close">Close chase</option>
+              <option value="chase" selected>Standard chase</option>
+              <option value="wide">Wide chase</option>
+              <option value="high">High angle</option>
+              <option value="tactical">Tactical overhead</option>
+              <option value="birdsEye">Bird’s-eye · GTA</option>
+            </select>
+          </label>
+          <label>3D quality
+            <select id="quality-select" name="quality">
+              <option value="performance">Performance</option>
+              <option value="balanced" selected>Balanced</option>
+              <option value="high">High detail</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="setup-error" class="setup-error" role="alert" hidden></div>
+        <button id="launch-button" class="primary-button" type="submit">Launch 3D Demo</button>
+        <button id="resume-button" class="primary-button resume-button" type="button" hidden>Resume driving</button>
+        <div class="setup-links">
+          <a href="https://console.cloud.google.com/google/maps-apis/api-list" target="_blank" rel="noopener noreferrer">Google Cloud API setup ↗</a>
+          <a href="https://developers.google.com/maps/documentation/tile/3d-tiles" target="_blank" rel="noopener noreferrer">3D Tiles documentation ↗</a>
+        </div>
+        <p class="legal-note">Training/simulation prototype only. Not for live emergency navigation. Google attribution remains on-screen. Peterborough has independent road/street matching; other Ontario cities currently use Google only as the visual world.</p>
+      </form>
+    </section>
+  </main>
+  <a class="road-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Peterborough roads © OpenStreetMap contributors</a>
+
+  <script>window.CESIUM_BASE_URL = 'https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/';</script>
+  <script src="https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/Cesium.js"></script>
+  <script>
+    (() => {
+      const Cesium = window.Cesium;
+      if (!Cesium) return;
+      if (Cesium.RequestScheduler?.requestsByServer) Cesium.RequestScheduler.requestsByServer['tile.googleapis.com:443'] = 18;
+      window.GOOGLE_TILESET_OPTIONS = Object.freeze({ showCreditsOnScreen: true });
+    })();
+  </script>
+  <script type="module" src="./app-dispatch-v0.0.22.js?v=0.0.22"></script>
+  <script src="./validation.js?v=0.0.8"></script>
+</body>
+</html>
