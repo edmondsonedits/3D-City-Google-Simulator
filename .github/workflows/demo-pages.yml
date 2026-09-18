@@ -28,7 +28,8 @@ jobs:
         run: npm test
       - name: Validate dispatch prototype modules
         run: |
-          node --check app-dispatch-v0.0.16.js
+          node --check app-dispatch-v0.0.17.js
+          node --check dispatch/after-action-review-v0.0.17.js
           node --check dispatch/response-tablet-v0.0.16.js
           node --check dispatch/ems-transport-v0.0.15.js
           node --check dispatch/incident-spatial-v0.0.14.js
