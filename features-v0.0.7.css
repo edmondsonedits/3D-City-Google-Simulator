@@ -1,0 +1,271 @@
+.camera-button {
+  min-width: 44px;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(7,16,25,.72);
+  color: var(--text);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .07em;
+  backdrop-filter: blur(10px);
+}
+.camera-button:hover { background: rgba(255,255,255,.12); }
+
+.compact-topbar {
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  align-items: flex-start;
+}
+.brand-chip {
+  border-radius: 12px;
+  padding: 7px 10px;
+  max-width: 235px;
+  background: rgba(7,16,25,.66);
+}
+.brand-chip h1 { margin-top: 0; font-size: 15px; }
+.brand-chip .eyebrow { font-size: 8px; }
+.topbar-actions { gap: 6px; }
+.icon-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  background: rgba(7,16,25,.72);
+}
+.pill { background: rgba(7,16,25,.66); }
+
+.street-card {
+  top: 72px;
+  left: 10px;
+  width: min(260px, calc(100vw - 20px));
+  padding: 9px 11px;
+  border-radius: 12px;
+  background: rgba(7,16,25,.66);
+}
+#street-name { font-size: 16px; }
+.road-state { font-size: 10px; }
+
+.status-stack { top: 72px; right: 10px; }
+.status-chip { padding: 6px 8px; font-size: 10px; }
+.diagnostics-toggle {
+  top: 126px;
+  right: 10px;
+  min-width: 34px;
+  width: 34px;
+  height: 34px;
+  overflow: hidden;
+  padding: 0;
+  font-size: 0;
+}
+.diagnostics-toggle::before {
+  content: "i";
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.setup-grid-v007 { grid-template-columns: 1.3fr .85fr .75fr; }
+.custom-city-field {
+  margin: -4px 0 18px;
+  padding: 14px;
+  border: 1px solid rgba(169,217,255,.2);
+  border-radius: 14px;
+  background: rgba(90,160,210,.06);
+}
+.custom-city-field[hidden] { display: none !important; }
+#camera-value { max-width: 190px; overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 900px), (pointer: coarse) {
+  .compact-topbar {
+    top: max(7px, env(safe-area-inset-top));
+    left: auto;
+    right: 8px;
+    width: auto;
+  }
+  .brand-chip, .pill { display: none; }
+  .topbar-actions { gap: 5px; }
+  .camera-button, .icon-button {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    border-radius: 10px;
+  }
+
+  .street-card {
+    top: max(7px, env(safe-area-inset-top));
+    left: 8px;
+    width: min(182px, calc(100vw - 108px));
+    min-height: 42px;
+    padding: 6px 9px;
+    border-radius: 10px;
+    background: rgba(7,16,25,.58);
+    display: flex;
+    align-items: center;
+  }
+  .street-label, .street-card .road-state { display: none; }
+  #street-name {
+    width: 100%;
+    font-size: 13px;
+    line-height: 1.15;
+  }
+
+  .status-stack, .diagnostics-toggle { display: none; }
+
+  .mobile-controls {
+    left: max(5px, env(safe-area-inset-left));
+    right: max(7px, env(safe-area-inset-right));
+    bottom: max(42px, calc(env(safe-area-inset-bottom) + 32px));
+    align-items: end;
+  }
+  .joystick {
+    width: 112px;
+    height: 112px;
+  }
+  .joystick-ring {
+    width: 96px;
+    height: 96px;
+    background: radial-gradient(circle, rgba(255,255,255,.045), rgba(7,16,25,.44));
+  }
+  .joystick-knob {
+    width: 44px;
+    height: 44px;
+    border-width: 4px;
+    opacity: .9;
+  }
+  .mobile-buttons { gap: 6px; }
+  .mobile-action {
+    min-width: 76px;
+    min-height: 44px;
+    height: 44px;
+    padding: 0 8px;
+    border-radius: 11px;
+    font-size: 9px;
+    background: rgba(7,16,25,.62);
+  }
+  .mobile-action.brake { background: rgba(150,38,33,.72); }
+
+  .drive-hud {
+    bottom: max(44px, calc(env(safe-area-inset-bottom) + 34px));
+    max-width: calc(100vw - 205px);
+    background: rgba(7,16,25,.58);
+    border-radius: 12px;
+  }
+  .drive-hud .speed { padding: 6px 10px; min-width: 68px; }
+  .speed strong { font-size: 22px; }
+  .speed span { font-size: 9px; }
+
+  .setup-grid-v007 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 570px) {
+  .setup-card { padding: 18px 15px; }
+  .setup-copy { margin: 12px 0 16px; }
+  .camera-button { font-size: 8px; }
+  .street-card { width: min(170px, calc(100vw - 103px)); }
+  .joystick { width: 106px; height: 106px; }
+  .joystick-ring { width: 92px; height: 92px; }
+  .mobile-action { min-width: 72px; }
+}
+
+@media (max-height: 560px) and (orientation: landscape) {
+  .compact-topbar { left: auto; right: 6px; width: auto; }
+  .street-card { top: 6px; left: 6px; width: 160px; }
+  .joystick { width: 96px; height: 96px; }
+  .joystick-ring { width: 84px; height: 84px; }
+  .mobile-controls { bottom: 36px; }
+  .drive-hud { bottom: 38px; }
+}
+
+
+/* v0.0.6: mobile driving gestures must never become browser text-selection/copy gestures. */
+#cesium-container,
+.compact-topbar,
+.street-card,
+.drive-hud,
+.status-stack,
+.diagnostics-toggle,
+.diagnostics-panel,
+.desktop-hint,
+.mobile-controls {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+#cesium-container,
+.mobile-controls,
+.mobile-controls * {
+  touch-action: none;
+}
+
+.mobile-controls button,
+.camera-button,
+.icon-button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+/* v0.0.7 spawn/recovery submenu */
+.spawn-tools {
+  margin: 0 0 14px;
+  border: 1px solid rgba(169,217,255,.18);
+  border-radius: 12px;
+  background: rgba(7,16,25,.34);
+  overflow: hidden;
+}
+.spawn-tools > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 11px 13px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  user-select: none;
+}
+.spawn-tools > summary::-webkit-details-marker { display: none; }
+.spawn-tools > summary::after {
+  content: "＋";
+  float: right;
+  opacity: .72;
+}
+.spawn-tools[open] > summary::after { content: "−"; }
+.spawn-tools-body {
+  padding: 0 13px 13px;
+}
+.spawn-address-row {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+.spawn-address-row input { min-width: 0; }
+.secondary-button {
+  min-height: 42px;
+  border: 1px solid rgba(169,217,255,.24);
+  border-radius: 10px;
+  padding: 0 12px;
+  background: rgba(48,93,126,.42);
+  color: var(--text);
+  font-weight: 800;
+}
+.secondary-button:disabled { opacity: .52; }
+.recover-button { width: 100%; margin-top: 4px; }
+.spawn-tool-status {
+  min-height: 1.2em;
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+.spawn-tool-status.good { color: #8fe1ad; }
+.spawn-tool-status.warn { color: #f0cd79; }
+.spawn-tool-status.bad { color: #ff9b96; }
+
+@media (max-width: 570px) {
+  .spawn-address-row { grid-template-columns: 1fr; }
+  .secondary-button { width: 100%; }
+}
