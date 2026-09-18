@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#071019">
   <meta name="description" content="Google Photorealistic 3D Tiles emergency vehicle driving proof of concept.">
-  <title>3D City Response Simulator — v0.0.6</title>
+  <title>3D City Response Simulator — v0.0.7</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.138.0/Build/Cesium/Widgets/widgets.css">
-  <link rel="stylesheet" href="./styles.css?v=0.0.6">
-  <link rel="stylesheet" href="./features-v0.0.6.css?v=0.0.6">
+  <link rel="stylesheet" href="./styles.css?v=0.0.7">
+  <link rel="stylesheet" href="./features-v0.0.7.css?v=0.0.7">
 </head>
 <body>
   <main id="app-shell">
@@ -22,7 +22,7 @@
       </div>
       <div class="topbar-actions">
         <button id="camera-cycle-button" class="camera-button" type="button" aria-label="Cycle camera view">CAM</button>
-        <span id="version-pill" class="pill">v0.0.6</span>
+        <span id="version-pill" class="pill">v0.0.7</span>
         <button id="setup-button" class="icon-button" type="button" aria-label="Open simulator setup">⚙</button>
       </div>
     </header>
@@ -86,7 +86,7 @@
       <form id="setup-form" class="setup-card" autocomplete="off">
         <div class="setup-heading">
           <div>
-            <p class="eyebrow">VERSION 0.0.6 · ONTARIO 3D DEMO</p>
+            <p class="eyebrow">VERSION 0.0.7 · ONTARIO 3D DEMO</p>
             <h2>Google 3D Driving Test</h2>
           </div>
           <span class="prototype-badge">Prototype</span>
@@ -97,7 +97,7 @@
         <input id="api-key" name="apiKey" type="password" inputmode="text" placeholder="Paste a Google Maps Platform API key" required>
         <p class="field-help">Map Tiles API is required. Ontario city search also requires Maps JavaScript API on the same key. The key stays in this browser tab and is never committed to GitHub.</p>
 
-        <div class="form-grid setup-grid-v006">
+        <div class="form-grid setup-grid-v007">
           <label>Starting location
             <select id="station-select" name="station">
               <option value="station1">Peterborough Station 1 — Sherbrooke St.</option>
@@ -113,6 +113,8 @@
               <option value="chase" selected>Standard chase</option>
               <option value="wide">Wide chase</option>
               <option value="high">High angle</option>
+              <option value="tactical">Tactical overhead</option>
+              <option value="birdsEye">Bird’s-eye · GTA</option>
             </select>
           </label>
           <label>3D quality
@@ -129,6 +131,20 @@
           <input id="ontario-city-input" name="ontarioCity" type="text" placeholder="e.g. Toronto, Ottawa, Kingston, Sudbury">
           <p class="field-help">Search is submitted only when you launch. The result must resolve to Ontario, Canada.</p>
         </div>
+
+        <details id="spawn-tools" class="spawn-tools">
+          <summary>Spawn & recovery tools</summary>
+          <div class="spawn-tools-body">
+            <label for="spawn-address">Spawn at an Ontario address</label>
+            <div class="spawn-address-row">
+              <input id="spawn-address" type="text" inputmode="text" placeholder="e.g. 123 George St N, Peterborough">
+              <button id="spawn-address-button" class="secondary-button" type="button">Spawn here</button>
+            </div>
+            <p class="field-help">Uses the same Google Maps JavaScript API geocoder as city search. Ontario addresses only.</p>
+            <button id="recover-surface-button" class="secondary-button recover-button" type="button">Recover truck to surface</button>
+            <p id="spawn-tool-status" class="spawn-tool-status" aria-live="polite">Use recovery if the truck appears below the rendered ground.</p>
+          </div>
+        </details>
 
         <div id="setup-error" class="setup-error" role="alert" hidden></div>
         <button id="launch-button" class="primary-button" type="submit">Launch 3D Demo</button>
@@ -153,7 +169,7 @@
       window.GOOGLE_TILESET_OPTIONS = Object.freeze({ showCreditsOnScreen: true });
     })();
   </script>
-  <script type="module" src="./app.js?v=0.0.6"></script>
-  <script src="./validation.js?v=0.0.6"></script>
+  <script type="module" src="./app.js?v=0.0.7"></script>
+  <script src="./validation.js?v=0.0.7"></script>
 </body>
 </html>
