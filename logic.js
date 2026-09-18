@@ -1,4 +1,4 @@
-export const VERSION = '0.0.7';
+export const VERSION = '0.0.8';
 
 export const TRUCK = Object.freeze({
   length: 10.4,
