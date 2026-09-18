@@ -11,8 +11,8 @@
   <link rel="stylesheet" href="./styles.css?v=0.0.8">
   <link rel="stylesheet" href="./features-v0.0.8.css?v=0.0.8">
   <style>
-    body[data-build="dispatch-prototype-v0.0.31"]::before{
-      content:"DISPATCH PROTOTYPE · v0.0.31";
+    body[data-build="dispatch-prototype-v0.0.32"]::before{
+      content:"DISPATCH PROTOTYPE · v0.0.32";
       position:fixed;z-index:9999;left:10px;bottom:8px;
       padding:5px 8px;border-radius:999px;
       font:800 9px/1 system-ui;letter-spacing:.08em;
@@ -21,8 +21,41 @@
       pointer-events:none;backdrop-filter:blur(6px)
     }
   </style>
-</head>
-<body data-build="dispatch-prototype-v0.0.31">
+<style id="dispatch-responsive-layout-v032">
+/* Dedicated mobile HUD zones: top info, bottom-left drive, bottom-center speed, bottom-right actions. */
+body[data-build="dispatch-prototype-v0.0.32"]::before{display:none!important}
+@media(max-width:700px){
+  .compact-topbar{top:8px!important;left:8px!important;right:8px!important}
+  #street-card{top:72px!important;left:8px!important;right:auto!important;width:min(46vw,190px)!important;padding:7px 9px!important}
+  #street-card .street-label,#street-card #road-status{display:none!important}
+  #street-name{font-size:13px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #dispatch-hud{top:72px!important;right:8px!important;width:min(47vw,205px)!important;padding:7px 8px!important;font-size:10px!important;border-radius:10px!important}
+  #dispatch-hud .dispatch-head strong{font-size:11px!important}
+  #dispatch-hud .dispatch-body{margin-top:4px!important}
+  #dispatch-hud .dispatch-call{font-size:12px!important}
+  #dispatch-hud .dispatch-address{font-size:9px!important;line-height:1.2!important}
+  #dispatch-hud .dispatch-actions{gap:4px!important}
+  #dispatch-hud .dispatch-actions button{padding:5px 7px!important;font-size:10px!important}
+  #mobile-controls{z-index:9000!important}
+  #joystick{position:fixed!important;left:14px!important;bottom:74px!important}
+  .mobile-buttons{position:fixed!important;right:14px!important;bottom:74px!important;display:flex!important;flex-direction:column!important;gap:8px!important}
+  #drive-hud{left:50%!important;right:auto!important;bottom:70px!important;transform:translateX(-50%)!important;width:auto!important;min-width:92px!important;padding:6px 10px!important}
+  #drive-hud .hud-stat{display:none!important}
+  #drive-hud .speed strong{font-size:28px!important}
+  #boot-run-box.minimized{left:auto!important;right:14px!important;bottom:188px!important;width:auto!important}
+  .road-attribution{left:50%!important;right:auto!important;bottom:4px!important;transform:translateX(-50%)!important;max-width:94vw!important;white-space:nowrap!important;font-size:8px!important;padding:2px 5px!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  #dispatch-diagnostics{display:none!important}
+}
+@media(max-width:700px) and (orientation:landscape){
+  #street-card{top:8px!important;left:8px!important;width:170px!important}
+  #dispatch-hud{top:58px!important;left:8px!important;right:auto!important;width:220px!important}
+  #joystick{bottom:38px!important}
+  .mobile-buttons{bottom:38px!important}
+  #drive-hud{bottom:28px!important}
+  #boot-run-box.minimized{right:126px!important;bottom:38px!important}
+}
+</style></head>
+<body data-build="dispatch-prototype-v0.0.32">
   <main id="app-shell">
     <div id="cesium-container" aria-label="3D city simulator viewport"></div>
 
@@ -120,7 +153,7 @@
       <form id="setup-form" class="setup-card setup-card-v008" autocomplete="off">
         <div class="setup-heading">
           <div>
-            <p class="eyebrow">VERSION 0.0.31 · DISPATCH INTEGRATION PROTOTYPE</p>
+            <p class="eyebrow">VERSION 0.0.32 · DISPATCH INTEGRATION PROTOTYPE</p>
             <h2>Google 3D Driving Test</h2>
           </div>
           <span class="prototype-badge">Prototype</span>
@@ -174,7 +207,7 @@
     #boot-run-box button{background:#15394c;color:white;border:1px solid #5798b9;border-radius:6px;padding:4px 10px}
     #boot-run-log{white-space:pre-wrap;margin:5px 0 0;user-select:text} @media(max-width:600px){#boot-run-box{max-height:24vh;font-size:10px;left:6px;right:6px;bottom:6px}#boot-run-box button{padding:3px 7px}}
   </style>
-  <aside id="boot-run-box"><header><b>RUN DIAGNOSTICS v0.0.31</b><span class="boot-actions"><button id="boot-min" type="button">MINIMIZE</button><button id="boot-copy" type="button">COPY</button></span></header><pre id="boot-run-log">[BOOT] HTML loaded\n</pre></aside>
+  <aside id="boot-run-box"><header><b>RUN DIAGNOSTICS v0.0.32</b><span class="boot-actions"><button id="boot-min" type="button">MINIMIZE</button><button id="boot-copy" type="button">COPY</button></span></header><pre id="boot-run-log">[BOOT] HTML loaded\n</pre></aside>
   <script>
   (()=>{const box=document.getElementById('boot-run-box'),out=document.getElementById('boot-run-log');const safe=v=>{let x=String(v??'');x=x.replace(/AIza[0-9A-Za-z_+\/-]{15,}/gi,'[API KEY REDACTED]');x=x.replace(/([?&](?:apiKey|key)=)[^&#\s]*/gi,'$1[REDACTED]');x=x.replace(/(api[-_ ]?key\s*[:=]\s*)\S+/gi,'$1[REDACTED]');return x};const log=(m)=>{out.textContent+='['+new Date().toLocaleTimeString()+'] '+safe(m)+'\\n';out.scrollTop=out.scrollHeight};window.__BOOT_RUN_LOG__=log;
   const min=document.getElementById('boot-min');min.onclick=()=>{box.classList.toggle('minimized');min.textContent=box.classList.contains('minimized')?'EXPAND':'MINIMIZE';log('UI diagnostics '+(box.classList.contains('minimized')?'minimized':'expanded'))};
@@ -202,7 +235,7 @@
       window.GOOGLE_TILESET_OPTIONS = Object.freeze({ showCreditsOnScreen: true });
     })();
   </script>
-  <script type="module" src="./app-dispatch-v0.0.31.js?v=0.0.31"></script>
+  <script type="module" src="./app-dispatch-v0.0.32.js?v=0.0.32"></script>
   <script src="./validation.js?v=0.0.8"></script>
 </body>
 </html>
