@@ -54,6 +54,10 @@ function fixture() {
 async function launch(page) {
   await page.locator('#api-key').fill('browser-fixture-not-a-key');
   await page.locator('#launch-button').click();
+  await page.waitForFunction(() => window.__CITY_DEMO_RUNTIME__?.snapshot().pickerActive);
+  assert.equal(await page.locator('#city-picker-overlay').isVisible(), true);
+  assert.equal(await page.locator('#city-picker-name').innerText(), 'Peterborough');
+  await page.locator('#city-picker-start').click();
   await page.waitForFunction(() => window.__CITY_DEMO_RUNTIME__?.snapshot().running);
   await page.waitForFunction(() => window.testViewer.scene.primitives._primitives.some(p => p.ready === true));
   await page.waitForFunction(() => window.__CITY_DEMO_RUNTIME__.snapshot().surfaceLocked);
@@ -71,6 +75,11 @@ try {
       const response = await route.fetch();
       await route.fulfill({ response, body: `(${fixture.toString()})();\n${await response.text()}` });
     });
+    await page.route('https://tile.openstreetmap.org/**', route => route.fulfill({
+      status: 200,
+      contentType: 'image/png',
+      body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2nXQAAAAASUVORK5CYII=', 'base64'),
+    }));
     await page.goto(url);
     await page.waitForFunction(() => window.__CITY_DEMO_RUNTIME__);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
@@ -133,6 +142,8 @@ try {
       await page.locator('#setup-button').click();
       await page.evaluate(() => { window.failStartup = true; });
       await page.locator('#launch-button').click();
+      await page.waitForFunction(() => window.__CITY_DEMO_RUNTIME__?.snapshot().pickerActive);
+      await page.locator('#city-picker-start').click();
       await page.waitForFunction(() => !document.querySelector('#setup-error').hidden);
       assert.equal((await runtime(page)).running, false);
       await page.evaluate(() => { window.failStartup = false; });
@@ -169,6 +180,11 @@ try {
   }
   // Exercise the actual unmodified API boundary with a rejected Google request.
   const errorPage = await browser.newPage();
+  await errorPage.route('https://tile.openstreetmap.org/**', route => route.fulfill({
+    status: 200,
+    contentType: 'image/png',
+    body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2nXQAAAAASUVORK5CYII=', 'base64'),
+  }));
   const errorMessages = [];
   errorPage.on('pageerror', error => errorMessages.push(error.message));
   await errorPage.route('https://tile.googleapis.com/**', route => route.fulfill({
@@ -177,6 +193,8 @@ try {
   await errorPage.goto(url);
   await errorPage.locator('#api-key').fill('rejected-test-key');
   await errorPage.locator('#launch-button').click();
+  await errorPage.waitForFunction(() => window.__CITY_DEMO_RUNTIME__?.snapshot().pickerActive);
+  await errorPage.locator('#city-picker-start').click();
   await errorPage.waitForFunction(() => !document.querySelector('#setup-error').hidden);
   assert.equal(await errorPage.locator('#launch-button').isEnabled(), true);
   assert.equal(await errorPage.locator('#setup-error').innerText().then(text => text.includes('rejected-test-key')), false);
