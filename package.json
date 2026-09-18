@@ -6,7 +6,7 @@
   "description": "Google Photorealistic 3D Tiles emergency vehicle driving proof of concept.",
   "scripts": {
     "start": "node tools/serve.mjs",
-    "test": "node --check app.js && node --check app-v0.0.8.js && node --check app-dispatch-v0.0.10.js && node --check app-dispatch-v0.0.11.js && node --check app-dispatch-v0.0.12.js && node --check app-dispatch-v0.0.13.js && node --check dispatch/dispatch-gameplay-v0.0.13.js && node --check dispatch/isolated-city-runtime-v0.0.12.js && node --check dispatch/peterborough-data-adapter-v0.0.10.js && node --check logic.js && node --check surface.js && node --check validation.js && node --test tests/*.test.mjs",
+    "test": "node --check app.js && node --check app-v0.0.8.js && node --check app-dispatch-v0.0.10.js && node --check app-dispatch-v0.0.11.js && node --check app-dispatch-v0.0.12.js && node --check app-dispatch-v0.0.13.js && node --check app-dispatch-v0.0.14.js && node --check dispatch/dispatch-gameplay-v0.0.13.js && node --check dispatch/incident-spatial-v0.0.14.js && node --check dispatch/isolated-city-runtime-v0.0.12.js && node --check dispatch/isolated-city-runtime-v0.0.14.js && node --check dispatch/peterborough-data-adapter-v0.0.10.js && node --check logic.js && node --check surface.js && node --check validation.js && node --test tests/*.test.mjs",
     "test:browser": "node tests/browser.mjs"
   },
   "engines": {"node": ">=20"},
