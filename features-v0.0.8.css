@@ -1,0 +1,494 @@
+.camera-button {
+  min-width: 44px;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(7,16,25,.72);
+  color: var(--text);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .07em;
+  backdrop-filter: blur(10px);
+}
+.camera-button:hover { background: rgba(255,255,255,.12); }
+
+.compact-topbar {
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  align-items: flex-start;
+}
+.brand-chip {
+  border-radius: 12px;
+  padding: 7px 10px;
+  max-width: 235px;
+  background: rgba(7,16,25,.66);
+}
+.brand-chip h1 { margin-top: 0; font-size: 15px; }
+.brand-chip .eyebrow { font-size: 8px; }
+.topbar-actions { gap: 6px; }
+.icon-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  background: rgba(7,16,25,.72);
+}
+.pill { background: rgba(7,16,25,.66); }
+
+.street-card {
+  top: 72px;
+  left: 10px;
+  width: min(260px, calc(100vw - 20px));
+  padding: 9px 11px;
+  border-radius: 12px;
+  background: rgba(7,16,25,.66);
+}
+#street-name { font-size: 16px; }
+.road-state { font-size: 10px; }
+
+.status-stack { top: 72px; right: 10px; }
+.status-chip { padding: 6px 8px; font-size: 10px; }
+.diagnostics-toggle {
+  top: 126px;
+  right: 10px;
+  min-width: 34px;
+  width: 34px;
+  height: 34px;
+  overflow: hidden;
+  padding: 0;
+  font-size: 0;
+}
+.diagnostics-toggle::before {
+  content: "i";
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.setup-grid-v008 { grid-template-columns: 1.3fr .85fr .75fr; }
+.custom-city-field {
+  margin: -4px 0 18px;
+  padding: 14px;
+  border: 1px solid rgba(169,217,255,.2);
+  border-radius: 14px;
+  background: rgba(90,160,210,.06);
+}
+.custom-city-field[hidden] { display: none !important; }
+#camera-value { max-width: 190px; overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 900px), (pointer: coarse) {
+  .compact-topbar {
+    top: max(7px, env(safe-area-inset-top));
+    left: auto;
+    right: 8px;
+    width: auto;
+  }
+  .brand-chip, .pill { display: none; }
+  .topbar-actions { gap: 5px; }
+  .camera-button, .icon-button {
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    border-radius: 10px;
+  }
+
+  .street-card {
+    top: max(7px, env(safe-area-inset-top));
+    left: 8px;
+    width: min(182px, calc(100vw - 108px));
+    min-height: 42px;
+    padding: 6px 9px;
+    border-radius: 10px;
+    background: rgba(7,16,25,.58);
+    display: flex;
+    align-items: center;
+  }
+  .street-label, .street-card .road-state { display: none; }
+  #street-name {
+    width: 100%;
+    font-size: 13px;
+    line-height: 1.15;
+  }
+
+  .status-stack, .diagnostics-toggle { display: none; }
+
+  .mobile-controls {
+    left: max(5px, env(safe-area-inset-left));
+    right: max(7px, env(safe-area-inset-right));
+    bottom: max(42px, calc(env(safe-area-inset-bottom) + 32px));
+    align-items: end;
+  }
+  .joystick {
+    width: 112px;
+    height: 112px;
+  }
+  .joystick-ring {
+    width: 96px;
+    height: 96px;
+    background: radial-gradient(circle, rgba(255,255,255,.045), rgba(7,16,25,.44));
+  }
+  .joystick-knob {
+    width: 44px;
+    height: 44px;
+    border-width: 4px;
+    opacity: .9;
+  }
+  .mobile-buttons { gap: 6px; }
+  .mobile-action {
+    min-width: 76px;
+    min-height: 44px;
+    height: 44px;
+    padding: 0 8px;
+    border-radius: 11px;
+    font-size: 9px;
+    background: rgba(7,16,25,.62);
+  }
+  .mobile-action.brake { background: rgba(150,38,33,.72); }
+
+  .drive-hud {
+    bottom: max(44px, calc(env(safe-area-inset-bottom) + 34px));
+    max-width: calc(100vw - 205px);
+    background: rgba(7,16,25,.58);
+    border-radius: 12px;
+  }
+  .drive-hud .speed { padding: 6px 10px; min-width: 68px; }
+  .speed strong { font-size: 22px; }
+  .speed span { font-size: 9px; }
+
+  .setup-grid-v008 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 570px) {
+  .setup-card { padding: 18px 15px; }
+  .setup-copy { margin: 12px 0 16px; }
+  .camera-button { font-size: 8px; }
+  .street-card { width: min(170px, calc(100vw - 103px)); }
+  .joystick { width: 106px; height: 106px; }
+  .joystick-ring { width: 92px; height: 92px; }
+  .mobile-action { min-width: 72px; }
+}
+
+@media (max-height: 560px) and (orientation: landscape) {
+  .compact-topbar { left: auto; right: 6px; width: auto; }
+  .street-card { top: 6px; left: 6px; width: 160px; }
+  .joystick { width: 96px; height: 96px; }
+  .joystick-ring { width: 84px; height: 84px; }
+  .mobile-controls { bottom: 36px; }
+  .drive-hud { bottom: 38px; }
+}
+
+
+/* v0.0.6: mobile driving gestures must never become browser text-selection/copy gestures. */
+#cesium-container,
+.compact-topbar,
+.street-card,
+.drive-hud,
+.status-stack,
+.diagnostics-toggle,
+.diagnostics-panel,
+.desktop-hint,
+.mobile-controls {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+#cesium-container,
+.mobile-controls,
+.mobile-controls * {
+  touch-action: none;
+}
+
+.mobile-controls button,
+.camera-button,
+.icon-button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+/* v0.0.7 spawn/recovery submenu */
+.spawn-tools {
+  margin: 0 0 14px;
+  border: 1px solid rgba(169,217,255,.18);
+  border-radius: 12px;
+  background: rgba(7,16,25,.34);
+  overflow: hidden;
+}
+.spawn-tools > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 11px 13px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  user-select: none;
+}
+.spawn-tools > summary::-webkit-details-marker { display: none; }
+.spawn-tools > summary::after {
+  content: "＋";
+  float: right;
+  opacity: .72;
+}
+.spawn-tools[open] > summary::after { content: "−"; }
+.spawn-tools-body {
+  padding: 0 13px 13px;
+}
+.spawn-address-row {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+.spawn-address-row input { min-width: 0; }
+.secondary-button {
+  min-height: 42px;
+  border: 1px solid rgba(169,217,255,.24);
+  border-radius: 10px;
+  padding: 0 12px;
+  background: rgba(48,93,126,.42);
+  color: var(--text);
+  font-weight: 800;
+}
+.secondary-button:disabled { opacity: .52; }
+.recover-button { width: 100%; margin-top: 4px; }
+.spawn-tool-status {
+  min-height: 1.2em;
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+.spawn-tool-status.good { color: #8fe1ad; }
+.spawn-tool-status.warn { color: #f0cd79; }
+.spawn-tool-status.bad { color: #ff9b96; }
+
+@media (max-width: 570px) {
+  .spawn-address-row { grid-template-columns: 1fr; }
+  .secondary-button { width: 100%; }
+}
+
+
+/* v0.0.8 simplified setup + Ontario God’s-eye city picker */
+.setup-card-v008 {
+  width: min(720px, calc(100vw - 28px));
+}
+.setup-grid-v008 {
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 18px;
+}
+
+.city-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+}
+.city-picker-overlay[hidden] { display: none !important; }
+
+.city-picker-intro {
+  position: absolute;
+  top: max(14px, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(620px, calc(100vw - 28px));
+  padding: 12px 16px;
+  border-radius: 15px;
+  text-align: center;
+  background: rgba(5, 15, 24, .74);
+  pointer-events: none;
+  transition: opacity .32s ease, transform .32s ease;
+}
+.city-picker-intro h2 {
+  margin: 2px 0 3px;
+  font-size: clamp(20px, 3vw, 30px);
+}
+.city-picker-intro p:last-child {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.city-picker-crosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 30px;
+  height: 30px;
+  transform: translate(-50%, -50%);
+  border: 2px solid rgba(228, 249, 255, .96);
+  border-radius: 50%;
+  box-shadow: 0 0 0 7px rgba(74, 199, 255, .12), 0 0 24px rgba(74, 199, 255, .5);
+  display: none;
+  pointer-events: none;
+}
+.city-picker-crosshair::before,
+.city-picker-crosshair::after {
+  content: "";
+  position: absolute;
+  background: rgba(228, 249, 255, .86);
+}
+.city-picker-crosshair::before {
+  width: 12px;
+  height: 2px;
+  left: 7px;
+  top: 12px;
+}
+.city-picker-crosshair::after {
+  width: 2px;
+  height: 12px;
+  left: 12px;
+  top: 7px;
+}
+
+.city-picker-dock {
+  position: absolute;
+  left: 50%;
+  bottom: max(18px, calc(env(safe-area-inset-bottom) + 12px));
+  transform: translateX(-50%);
+  width: min(680px, calc(100vw - 28px));
+  min-height: 74px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(5, 15, 24, .82);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  pointer-events: auto;
+  transition: opacity .28s ease, transform .36s cubic-bezier(.2,.8,.2,1);
+}
+.city-picker-choice {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.city-picker-choice span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.city-picker-choice strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 20px;
+}
+.city-picker-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.city-picker-actions .secondary-button {
+  min-width: 82px;
+}
+.city-picker-actions .primary-button {
+  width: auto;
+  min-width: 190px;
+  margin: 0;
+  padding: 0 20px;
+  min-height: 46px;
+}
+
+body.city-picker-active .compact-topbar,
+body.city-picker-active .street-card,
+body.city-picker-active .drive-hud,
+body.city-picker-active .status-stack,
+body.city-picker-active .diagnostics-toggle,
+body.city-picker-active .diagnostics-panel,
+body.city-picker-active .desktop-hint,
+body.city-picker-active .mobile-controls,
+body.city-picker-active .road-attribution {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity .2s ease;
+}
+
+body.city-picker-active #cesium-container {
+  transition: filter .4s ease, opacity .4s ease;
+}
+body.city-picker-launching .city-picker-intro {
+  opacity: 0;
+  transform: translate(-50%, -12px);
+}
+body.city-picker-launching .city-picker-dock {
+  transform: translate(-50%, 12px);
+  opacity: .35;
+}
+body.city-picker-launching #cesium-container {
+  filter: saturate(1.15) brightness(.9);
+}
+
+@media (max-width: 900px), (pointer: coarse) {
+  .setup-grid-v008 { grid-template-columns: 1fr; }
+  .city-picker-crosshair { display: block; }
+  .city-picker-intro {
+    top: max(8px, env(safe-area-inset-top));
+    width: min(430px, calc(100vw - 18px));
+    padding: 9px 12px;
+  }
+  .city-picker-intro h2 { font-size: 20px; }
+  .city-picker-intro .eyebrow { font-size: 8px; }
+  .city-picker-intro p:last-child { font-size: 10px; }
+  .city-picker-dock {
+    width: calc(100vw - 18px);
+    bottom: max(8px, calc(env(safe-area-inset-bottom) + 6px));
+    min-height: 66px;
+    padding: 9px 10px;
+    border-radius: 14px;
+  }
+  .city-picker-choice strong { font-size: 17px; }
+  .city-picker-choice span { font-size: 9px; }
+  .city-picker-actions { gap: 6px; }
+  .city-picker-actions .secondary-button {
+    min-width: 58px;
+    width: 58px;
+    padding: 0 6px;
+    font-size: 10px;
+  }
+  .city-picker-actions .primary-button {
+    min-width: 128px;
+    max-width: 46vw;
+    padding: 0 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 560px) {
+  .setup-card-v008 {
+    width: calc(100vw - 16px);
+    padding: 17px 14px;
+  }
+  .city-picker-intro {
+    left: 9px;
+    transform: none;
+    width: calc(100vw - 18px);
+  }
+  .city-picker-dock {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .city-picker-choice {
+    align-items: center;
+    text-align: center;
+  }
+  .city-picker-actions {
+    width: 100%;
+  }
+  .city-picker-actions .secondary-button {
+    flex: 0 0 64px;
+  }
+  .city-picker-actions .primary-button {
+    flex: 1 1 auto;
+    max-width: none;
+  }
+  body.city-picker-launching .city-picker-intro {
+    transform: translateY(-12px);
+  }
+}
