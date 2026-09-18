@@ -48,6 +48,8 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Run real-renderer fixture tests (not Google validation)
         run: npm run test:browser
+      - name: Run dispatch integration browser tests
+        run: node tests/dispatch-browser-v0.0.19.mjs
       - name: Save browser evidence
         if: always()
         uses: actions/upload-artifact@v4
