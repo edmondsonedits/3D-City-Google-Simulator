@@ -5,10 +5,10 @@ import fs from 'node:fs';
 const index = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const pkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const app = fs.readFileSync(new URL('../app.js', import.meta.url), 'utf8');
-const runtime = fs.readFileSync(new URL('../app-v0.0.6.js', import.meta.url), 'utf8');
+const runtime = fs.readFileSync(new URL('../app-v0.0.7.js', import.meta.url), 'utf8');
 
-test('release metadata is aligned to v0.0.6', () => {
-  assert.equal(pkg.version, '0.0.6');
+test('release metadata is aligned to v0.0.7', () => {
+  assert.equal(pkg.version, '0.0.7');
   assert.match(index, /3D City Response Simulator — v0\.0\.6/);
   assert.match(index, /validation\.js\?v=0\.0\.6/);
   assert.match(index, /app\.js\?v=0\.0\.6/);
@@ -49,16 +49,38 @@ test('mobile driving HUD keeps the road-ahead view open', () => {
   assert.doesNotMatch(index, /id="mobile-camera"/);
   assert.match(index, /id="mobile-brake"/);
   assert.match(index, /id="mobile-recenter"[^>]*>CENTER<\/button>/);
-  assert.match(index, /features-v0\.0\.6\.css\?v=0\.0\.6/);
+  assert.match(index, /features-v0\.0\.7\.css\?v=0\.0\.7/);
 });
 
 
 test('mobile long-press copy gestures are disabled only on driving surfaces', () => {
-  const css = fs.readFileSync(new URL('../features-v0.0.6.css', import.meta.url), 'utf8');
+  const css = fs.readFileSync(new URL('../features-v0.0.7.css', import.meta.url), 'utf8');
   assert.match(css, /-webkit-touch-callout:\s*none/);
   assert.match(css, /user-select:\s*none/);
   assert.match(css, /touch-action:\s*none/);
   assert.match(runtime, /contextmenu[\s\S]*preventDefault/);
   assert.match(runtime, /selectstart[\s\S]*preventDefault/);
   assert.doesNotMatch(css, /#setup-overlay[^\{]*\{[^\}]*user-select:\s*none/);
+});
+
+
+test('v0.0.7 adds tactical and GTA bird-eye cameras', () => {
+  assert.match(index, /value="tactical">Tactical overhead/);
+  assert.match(index, /value="birdsEye">Bird’s-eye · GTA/);
+  assert.match(runtime, /birdsEye:[^\n]*range:\s*95[^\n]*pitch:\s*-1\.24/);
+  assert.match(runtime, /CAMERA_ORDER[^\n]*'tactical'[^\n]*'birdsEye'/);
+  assert.match(runtime, /state\.camera\.range = clamp\([^\n]*150/);
+});
+
+test('v0.0.7 exposes Ontario address spawn and surface recovery tools', () => {
+  assert.match(index, /id="spawn-tools"/);
+  assert.match(index, /id="spawn-address"/);
+  assert.match(index, /id="spawn-address-button"/);
+  assert.match(index, /id="recover-surface-button"/);
+  assert.match(runtime, /async function geocodeOntarioAddress/);
+  assert.match(runtime, /administrativeArea:\s*'ON'/);
+  assert.match(runtime, /async function spawnAtAddress/);
+  assert.match(runtime, /async function recoverTruckToSurface/);
+  assert.match(runtime, /sampleHeightMostDetailed/);
+  assert.match(runtime, /Truck placed back on top of the rendered surface/);
 });
