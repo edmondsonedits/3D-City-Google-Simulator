@@ -1,4 +1,4 @@
-const VERSION = '0.0.7';
+const VERSION = '0.0.8';
 const MOVE_PASS_METERS = 50;
 const FPS_PASS = 25;
 const el = {
