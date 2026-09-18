@@ -28,12 +28,19 @@ jobs:
         run: npm test
       - name: Validate dispatch prototype modules
         run: |
+          node --check app-dispatch-v0.0.18.js
+          node --check dispatch/integration-polish-v0.0.18.js
           node --check app-dispatch-v0.0.17.js
           node --check dispatch/after-action-review-v0.0.17.js
           node --check dispatch/response-tablet-v0.0.16.js
           node --check dispatch/ems-transport-v0.0.15.js
           node --check dispatch/incident-spatial-v0.0.14.js
           node --check dispatch/dispatch-gameplay-v0.0.13.js
+      - name: Validate production remains isolated
+        run: |
+          grep -q 'app.js?v=0.0.8' index.html
+          test -f dispatch-prototype-v0.0.18.html
+          ! grep -R -E 'AIza[0-9A-Za-z_-]{20,}' --exclude-dir=.git .
       - name: Install browser tests
         run: npm ci
       - name: Install Chromium
