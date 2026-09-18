@@ -28,6 +28,7 @@ jobs:
         run: npm test
       - name: Validate dispatch prototype modules
         run: |
+          node --check app-dispatch-v0.0.19.js
           node --check app-dispatch-v0.0.18.js
           node --check dispatch/integration-polish-v0.0.18.js
           node --check app-dispatch-v0.0.17.js
@@ -39,7 +40,7 @@ jobs:
       - name: Validate production remains isolated
         run: |
           grep -q 'app.js?v=0.0.8' index.html
-          test -f dispatch-prototype-v0.0.18.html
+          test -f dispatch-prototype-v0.0.19.html
           ! grep -R -E 'AIza[0-9A-Za-z_-]{20,}' --exclude-dir=.git .
       - name: Install browser tests
         run: npm ci
