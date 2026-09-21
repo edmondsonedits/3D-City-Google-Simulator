@@ -1251,11 +1251,39 @@ async function dispatchSpawnAtCoordinates(spawn) {
   window.dispatchEvent(new CustomEvent('city-dispatch-spawned',{detail:{...state.station,groundHeight,groundLocked:Number.isFinite(groundHeight)}}));
   return {...state.vehicle};
 }
+async function startSessionAtCoordinates(spawn) {
+  const lat=Number(spawn?.lat),lon=Number(spawn?.lon),headingDeg=Number(spawn?.headingDeg);
+  if(!Number.isFinite(lat)||!Number.isFinite(lon)||!Number.isFinite(headingDeg)) throw new Error('Invalid session spawn.');
+  const apiKey=(picker.apiKey||dom.apiKey?.value||'').trim();
+  if(!apiKey) throw new Error('Google API key is required.');
+  const quality=picker.quality||dom.qualitySelect?.value||'balanced';
+  const cameraPreset=picker.cameraPreset||dom.cameraSelect?.value||'birdsEye';
+  const selectedCity=ONTARIO_CITIES[picker.selectedIndex]?.name||'Peterborough';
+
+  // Dispatch bases already have authoritative coordinates. Do not route them through
+  // Google address geocoding first; that can resolve the building/roof and adds an
+  // unnecessary failure point before the actual base spawn.
+  destroyOntarioPicker();
+  dom.cityPickerStart.disabled=false;
+  dom.cityPickerBack.disabled=false;
+  document.body.classList.remove('city-picker-active','city-picker-launching');
+  dom.cityPickerOverlay.hidden=true;
+
+  await startDemo(apiKey,{
+    id:String(spawn.id||'dispatch-base'),
+    name:String(spawn.name||selectedCity),
+    address:String(spawn.address||''),
+    lat,lon,headingDeg,
+  },quality,cameraPreset);
+  saveSetting('google3d.selectedCity',selectedCity);
+  return { ...state.vehicle };
+}
+
 setupGlobalInput(); setupJoystick(); setupUi();
 turboButton=document.createElement('button');turboButton.id='turbo-button';turboButton.type='button';turboButton.textContent='TURBO';turboButton.setAttribute('aria-pressed','false');turboButton.hidden=true;turboButton.style.cssText='position:fixed;z-index:11500;right:7px;top:50%;transform:translateY(-50%);padding:5px 7px;min-width:0;border:1px solid #78cfff;border-radius:7px;background:#071923cc;color:#dff7ff;font:800 9px/1 system-ui;letter-spacing:.06em;opacity:.72';document.body.append(turboButton);
 turboButton.onclick=()=>{turboEnabled=!turboEnabled;turboButton.setAttribute('aria-pressed',String(turboEnabled));turboButton.textContent=turboEnabled?'TURBO ON':'TURBO';turboButton.style.opacity=turboEnabled?'1':'.72';window.__BOOT_RUN_LOG__?.('TURBO '+(turboEnabled?'enabled: unlimited acceleration':'disabled'));};
 requestAnimationFrame(tick);
-window.__CITY_DEMO_RUNTIME__ = Object.freeze({ setTurbo:(enabled)=>{turboEnabled=Boolean(enabled);turboButton.setAttribute('aria-pressed',String(turboEnabled));return turboEnabled;}, spawnAtCoordinates:dispatchSpawnAtCoordinates, getViewer:()=>state.viewer&&!state.viewer.isDestroyed()?state.viewer:null, snapshot: () => ({
+window.__CITY_DEMO_RUNTIME__ = Object.freeze({ setTurbo:(enabled)=>{turboEnabled=Boolean(enabled);turboButton.setAttribute('aria-pressed',String(turboEnabled));return turboEnabled;}, startSessionAtCoordinates, spawnAtCoordinates:dispatchSpawnAtCoordinates, getViewer:()=>state.viewer&&!state.viewer.isDestroyed()?state.viewer:null, snapshot: () => ({
   version: VERSION, running: state.demoRunning && dom.setupOverlay.hidden && !document.hidden, sessionActive: state.demoRunning && dom.setupOverlay.hidden, cameraMode: state.camera.mode, cameraPreset: state.camera.preset, cameraRange: state.camera.range,
   vehicle: { ...state.vehicle }, distanceDriven: state.distanceDriven, tilesConnected: Boolean(state.tileset) && !state.tileFailure,
   roadsReady: Boolean(state.roadMatcher?.segmentCount), roadDataRequired: state.trainingRoadsEnabled, surfaceLocked: state.surface.locked && performance.now() - state.surface.lastAcceptedAt < 2000,
