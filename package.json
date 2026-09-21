@@ -6,8 +6,8 @@
   "description": "Google Photorealistic 3D Tiles emergency vehicle driving proof of concept.",
   "scripts": {
     "start": "node tools/serve.mjs",
-    "test": "node --check app.js && node --check app-v0.0.8.js && node --check app-dispatch-v0.0.43.js && node --check app-dispatch-mode-v0.0.43.js && node --check app-dispatch-runtime-v0.0.43.js && node --check dispatch/dispatch-gameplay-v0.0.13.js && node --check dispatch/incident-spatial-v0.0.14.js && node --check dispatch/ems-transport-v0.0.15.js && node --check dispatch/response-tablet-v0.0.16.js && node --check dispatch/after-action-review-v0.0.17.js && node --check dispatch/integration-polish-v0.0.18.js && node --check dispatch/peterborough-data-adapter-v0.0.31.js && node --check logic.js && node --check surface.js && node --check validation.js && node --test tests/*.test.mjs",
-    "test:browser": "node tests/dispatch-browser-v0.0.43.mjs"
+    "test": "node --check app.js && node --check app-v0.0.8.js && node --check app-dispatch-v0.0.44.js && node --check app-dispatch-mode-v0.0.44.js && node --check app-dispatch-runtime-v0.0.44.js && node --check dispatch/dispatch-gameplay-v0.0.13.js && node --check dispatch/incident-spatial-v0.0.14.js && node --check dispatch/ems-transport-v0.0.15.js && node --check dispatch/response-tablet-v0.0.16.js && node --check dispatch/after-action-review-v0.0.17.js && node --check dispatch/integration-polish-v0.0.18.js && node --check dispatch/peterborough-data-adapter-v0.0.31.js && node --check logic.js && node --check surface.js && node --check validation.js && node --test tests/*.test.mjs",
+    "test:browser": "node tests/dispatch-browser-v0.0.44.mjs"
   },
   "engines": {
     "node": ">=20"
