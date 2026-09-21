@@ -170,6 +170,7 @@ const state = {
   viewer: null,
   tileset: null,
   truckEntity: null,
+  truckGhostEntity: null,
   station: STATIONS.station1,
   quality: 'balanced',
   trainingRoadsEnabled: true,
@@ -557,10 +558,105 @@ async function refreshSurfaceHeight() {
   finally { if (generation === state.surfaceGeneration) state.surface.pending = false; }
 }
 function vehicleCartesian(height = state.surface.displayHeight) { return Cesium.Cartesian3.fromDegrees(state.vehicle.lon, state.vehicle.lat, height); }
+function createTruckGhostImage() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 160;
+  canvas.height = 280;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return canvas;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.shadowColor = 'rgba(205,244,255,0.55)';
+  ctx.shadowBlur = 12;
+
+  const body = { x: 31, y: 20, w: 98, h: 240 };
+  const r = 15;
+  ctx.beginPath();
+  ctx.moveTo(body.x + r, body.y);
+  ctx.lineTo(body.x + body.w - r, body.y);
+  ctx.quadraticCurveTo(body.x + body.w, body.y, body.x + body.w, body.y + r);
+  ctx.lineTo(body.x + body.w, body.y + body.h - r);
+  ctx.quadraticCurveTo(body.x + body.w, body.y + body.h, body.x + body.w - r, body.y + body.h);
+  ctx.lineTo(body.x + r, body.y + body.h);
+  ctx.quadraticCurveTo(body.x, body.y + body.h, body.x, body.y + body.h - r);
+  ctx.lineTo(body.x, body.y + r);
+  ctx.quadraticCurveTo(body.x, body.y, body.x + r, body.y);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(189,235,255,0.10)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(224,248,255,0.78)';
+  ctx.lineWidth = 7;
+  ctx.stroke();
+
+  // Cab / windshield.
+  ctx.beginPath();
+  ctx.moveTo(48, 44);
+  ctx.lineTo(112, 44);
+  ctx.lineTo(120, 82);
+  ctx.lineTo(40, 82);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(194,238,255,0.12)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(229,249,255,0.58)';
+  ctx.lineWidth = 4;
+  ctx.stroke();
+
+  // Apparatus compartments and centre ladder give the ghost a truck silhouette
+  // without pretending the billboard is the actual 3D model.
+  ctx.strokeStyle = 'rgba(225,248,255,0.48)';
+  ctx.lineWidth = 4;
+  for (const y of [112, 154, 196, 230]) {
+    ctx.beginPath(); ctx.moveTo(43, y); ctx.lineTo(117, y); ctx.stroke();
+  }
+  ctx.beginPath();
+  ctx.moveTo(69, 96); ctx.lineTo(69, 236);
+  ctx.moveTo(91, 96); ctx.lineTo(91, 236);
+  ctx.stroke();
+
+  // Wheels.
+  ctx.fillStyle = 'rgba(226,249,255,0.52)';
+  for (const y of [94, 210]) {
+    ctx.fillRect(22, y, 10, 34);
+    ctx.fillRect(128, y, 10, 34);
+  }
+
+  // Small direction chevron at the front.
+  ctx.beginPath();
+  ctx.moveTo(80, 6); ctx.lineTo(68, 22); ctx.lineTo(92, 22); ctx.closePath();
+  ctx.fillStyle = 'rgba(232,251,255,0.72)';
+  ctx.fill();
+  return canvas;
+}
+
+function shouldShowTruckGhost() {
+  return Boolean(
+    state.demoRunning &&
+    state.dispatchGroundLock?.active &&
+    state.truckGhostEntity &&
+    !currentPreset().hideTruck
+  );
+}
+
 function updateTruckEntity() {
   if (!state.truckEntity) return;
-  const position = vehicleCartesian(); state.truckEntity.position = position;
+  const position = vehicleCartesian();
+  state.truckEntity.position = position;
   state.truckEntity.orientation = Cesium.Transforms.headingPitchRollQuaternion(position, new Cesium.HeadingPitchRoll(wrapAngle(state.vehicle.heading + state.modelYawOffset), 0, 0));
+
+  // A normal duplicate 3D model would still be hidden by the Google building because
+  // both models participate in the same depth test. The billboard below is the
+  // guaranteed-visible "x-ray" layer: it follows the real truck, ignores scene depth,
+  // and only appears while the station ground lock says the truck is inside/near the hall.
+  if (state.truckGhostEntity) {
+    state.truckGhostEntity.position = position;
+    state.truckGhostEntity.show = shouldShowTruckGhost();
+    if (state.truckGhostEntity.billboard) {
+      const cameraHeading = Number(state.viewer?.camera?.heading) || 0;
+      state.truckGhostEntity.billboard.rotation = -wrapAngle(state.vehicle.heading - cameraHeading);
+    }
+  }
 }
 function updateCamera(dt) {
   if (!state.viewer || !state.demoRunning) return;
@@ -668,6 +764,24 @@ function createTruck() {
     orientation: Cesium.Transforms.headingPitchRollQuaternion(position, new Cesium.HeadingPitchRoll(state.vehicle.heading + state.modelYawOffset, 0, 0)),
     model: { uri: TRUCK_MODEL_URL, scale: 1, minimumPixelSize: 0, maximumScale: 1, runAnimations: false, shadows: Cesium.ShadowMode.DISABLED } });
   state.truckEntity.show = !currentPreset().hideTruck;
+
+  state.truckGhostEntity = state.viewer.entities.add({
+    id: 'demo-fire-truck-xray',
+    name: 'Fire Truck X-ray Overlay',
+    position,
+    show: false,
+    billboard: {
+      image: createTruckGhostImage(),
+      width: 58,
+      height: 102,
+      color: Cesium.Color.WHITE.withAlpha(0.48),
+      disableDepthTestDistance: Number.POSITIVE_INFINITY,
+      scaleByDistance: new Cesium.NearFarScalar(8, 1.18, 220, 0.46),
+      horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+      verticalOrigin: Cesium.VerticalOrigin.CENTER,
+      rotation: 0,
+    },
+  });
 }
 function installViewerInput() {
   state.viewerAbort?.abort(); const controller = new AbortController(); state.viewerAbort = controller; const { signal } = controller, canvas = state.viewer.canvas;
@@ -877,6 +991,7 @@ async function openOntarioPicker(apiKey, quality, cameraPreset) {
   state.viewer = null;
   state.tileset = null;
   state.truckEntity = null;
+  state.truckGhostEntity = null;
   destroyOntarioPicker();
 
   picker.apiKey = apiKey;
@@ -1007,6 +1122,7 @@ async function startDemo(apiKey, spawn, quality, cameraPreset) {
   state.viewer = null;
   state.tileset = null;
   state.truckEntity = null;
+  state.truckGhostEntity = null;
   applyCameraPreset(cameraPreset, { announce: false });
   resetVehicle({ forceSurface: true });
   dom.station.textContent = spawn.name;
@@ -1287,5 +1403,5 @@ window.__CITY_DEMO_RUNTIME__ = Object.freeze({ setTurbo:(enabled)=>{turboEnabled
   version: VERSION, running: state.demoRunning && dom.setupOverlay.hidden && !document.hidden, sessionActive: state.demoRunning && dom.setupOverlay.hidden, cameraMode: state.camera.mode, cameraPreset: state.camera.preset, cameraRange: state.camera.range,
   vehicle: { ...state.vehicle }, distanceDriven: state.distanceDriven, tilesConnected: Boolean(state.tileset) && !state.tileFailure,
   roadsReady: Boolean(state.roadMatcher?.segmentCount), roadDataRequired: state.trainingRoadsEnabled, surfaceLocked: state.surface.locked && performance.now() - state.surface.lastAcceptedAt < 2000,
-  fps: state.fps, input: getDriveInput(), locationName: state.station.name, surfaceHeight: state.surface.displayHeight, dispatchGroundLocked: Boolean(state.dispatchGroundLock?.active), dispatchGroundHeight: state.dispatchGroundLock?.height ?? null, pickerActive: Boolean(picker.viewer), selectedCity: ONTARIO_CITIES[picker.selectedIndex]?.name || null,
+  fps: state.fps, input: getDriveInput(), locationName: state.station.name, surfaceHeight: state.surface.displayHeight, dispatchGroundLocked: Boolean(state.dispatchGroundLock?.active), dispatchGroundHeight: state.dispatchGroundLock?.height ?? null, truckGhostVisible: Boolean(state.truckGhostEntity?.show), pickerActive: Boolean(picker.viewer), selectedCity: ONTARIO_CITIES[picker.selectedIndex]?.name || null,
 }) });
