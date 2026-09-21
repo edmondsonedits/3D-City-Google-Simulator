@@ -11,7 +11,7 @@ async function launchBase(page,service,index){
   const expected=bases[index].id;
   await page.evaluate(({service,id})=>window.__DISPATCH_MODE_RUNTIME__.launchBase(service,id),{service,id:expected});
   await page.waitForFunction(id=>window.__DISPATCH_MODE_RUNTIME__.snapshot().baseId===id,expected);
-  await page.waitForFunction(()=>window.__CITY_DEMO_RUNTIME__.snapshot().running);
+  await page.waitForFunction(()=>window.__CITY_DEMO_RUNTIME__.snapshot().sessionActive);
   return page.evaluate(()=>({mode:window.__DISPATCH_MODE_RUNTIME__.snapshot(),runtime:window.__CITY_DEMO_RUNTIME__.snapshot(),vehicle:window.__CITY_DEMO_RUNTIME__.snapshot().vehicle}));
 }
 try{for(const [service,count] of [['fire',3],['ems',2]])for(let i=0;i<count;i++){const r=await setup(),s=await launchBase(r.page,service,i);assert.equal(s.mode.service,service);assert.equal(s.runtime.dispatchGroundLocked,true);assert.equal(s.runtime.dispatchGroundHeight,190);assert.ok(Math.abs(s.vehicle.lat-Number(s.mode.base.spawnLat))<.00001);assert.ok(Math.abs(s.vehicle.lon-Number(s.mode.base.spawnLng))<.00001);assert.deepEqual(r.errors,[]);await r.context.close()}
