@@ -7,7 +7,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="build" content="0.0.45">
+  <meta name="build" content="0.0.46">
   <meta name="description" content="Google Photorealistic 3D Tiles emergency vehicle driving proof of concept.">
   <title>3D City Response Simulator — Dispatch</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -15,8 +15,8 @@
   <link rel="stylesheet" href="./styles.css?v=0.0.8-r20260928a">
   <link rel="stylesheet" href="./features-v0.0.8.css?v=0.0.8-r20260928a">
   <style>
-    body[data-build="dispatch-prototype-v0.0.45"]::before{
-      content:"DISPATCH PROTOTYPE · v0.0.45";
+    body[data-build="dispatch-prototype-v0.0.46"]::before{
+      content:"DISPATCH PROTOTYPE · v0.0.46";
       position:fixed;z-index:9999;left:10px;bottom:8px;
       padding:5px 8px;border-radius:999px;
       font:800 9px/1 system-ui;letter-spacing:.08em;
@@ -27,7 +27,7 @@
   </style>
 <style id="dispatch-responsive-layout-v042">
 /* Dedicated mobile HUD zones: top info, bottom-left drive, bottom-center speed, bottom-right actions. */
-body[data-build="dispatch-prototype-v0.0.45"]::before{display:none!important}
+body[data-build="dispatch-prototype-v0.0.46"]::before{display:none!important}
 @media(max-width:700px){
   .compact-topbar{top:8px!important;left:8px!important;right:8px!important}
   #street-card{top:72px!important;left:8px!important;right:auto!important;width:min(46vw,190px)!important;padding:7px 9px!important}
@@ -61,7 +61,7 @@ body[data-build="dispatch-prototype-v0.0.45"]::before{display:none!important}
   /* Pre-drive controls stay hidden until the player has selected a city. */
   body:not([data-city-selected="true"]) #mobile-controls{display:none!important}
 </style></head>
-<body data-build="dispatch-prototype-v0.0.45">
+<body data-build="dispatch-prototype-v0.0.46">
   <main id="app-shell">
     <div id="cesium-container" aria-label="3D city simulator viewport"></div>
 
@@ -72,7 +72,7 @@ body[data-build="dispatch-prototype-v0.0.45"]::before{display:none!important}
       </div>
       <div class="topbar-actions">
         <div id="live-compass" aria-label="Current heading" style="min-width:42px;height:42px;display:grid;place-items:center;border-radius:50%;border:2px solid rgba(216,248,255,.8);background:rgba(4,15,25,.72);color:#fff;font:800 15px/1 system-ui;box-shadow:inset 0 0 0 2px rgba(255,255,255,.08)">N</div><button id="camera-cycle-button" class="camera-button" type="button" aria-label="Cycle camera view">CAM</button>
-        <span id="version-pill" class="pill">v0.0.45</span>
+        <span id="version-pill" class="pill">v0.0.46</span>
         <button id="setup-button" class="icon-button" type="button" aria-label="Open simulator setup">⚙</button>
       </div>
     </header>
@@ -159,7 +159,7 @@ body[data-build="dispatch-prototype-v0.0.45"]::before{display:none!important}
       <form id="setup-form" class="setup-card setup-card-v008" autocomplete="off">
         <div class="setup-heading">
           <div>
-            <p class="eyebrow">VERSION 0.0.45 · DISPATCH INTEGRATION PROTOTYPE</p>
+            <p class="eyebrow">VERSION 0.0.46 · DISPATCH INTEGRATION PROTOTYPE</p>
             <h2>Google 3D Driving Test</h2>
           </div>
           <span class="prototype-badge">Prototype</span>
@@ -213,7 +213,7 @@ body[data-build="dispatch-prototype-v0.0.45"]::before{display:none!important}
     #boot-run-box button{background:#15394c;color:white;border:1px solid #5798b9;border-radius:6px;padding:4px 10px}
     #boot-run-log{white-space:pre-wrap;margin:5px 0 0;user-select:text} @media(max-width:600px){#boot-run-box{max-height:24vh;font-size:10px;left:6px;right:6px;bottom:6px}#boot-run-box button{padding:3px 7px}}
   </style>
-  <aside id="boot-run-box"><header><b>RUN DIAGNOSTICS v0.0.45</b><span class="boot-actions"><button id="boot-min" type="button">MINIMIZE</button><button id="boot-copy" type="button">COPY</button></span></header><pre id="boot-run-log">[BOOT] HTML loaded\n</pre></aside>
+  <aside id="boot-run-box"><header><b>RUN DIAGNOSTICS v0.0.46</b><span class="boot-actions"><button id="boot-min" type="button">MINIMIZE</button><button id="boot-copy" type="button">COPY</button></span></header><pre id="boot-run-log">[BOOT] HTML loaded\n</pre></aside>
   <script>
   (()=>{const box=document.getElementById('boot-run-box'),out=document.getElementById('boot-run-log');const safe=v=>{let x=String(v??'');x=x.replace(/AIza[0-9A-Za-z_+\/-]{15,}/gi,'[API KEY REDACTED]');x=x.replace(/([?&](?:apiKey|key)=)[^&#\s]*/gi,'$1[REDACTED]');x=x.replace(/(api[-_ ]?key\s*[:=]\s*)\S+/gi,'$1[REDACTED]');return x};const log=(m)=>{out.textContent+='['+new Date().toLocaleTimeString()+'] '+safe(m)+'\\n';out.scrollTop=out.scrollHeight};window.__BOOT_RUN_LOG__=log;
   const min=document.getElementById('boot-min');min.onclick=()=>{box.classList.toggle('minimized');min.textContent=box.classList.contains('minimized')?'EXPAND':'MINIMIZE';log('UI diagnostics '+(box.classList.contains('minimized')?'minimized':'expanded'))};
@@ -229,6 +229,7 @@ body[data-build="dispatch-prototype-v0.0.45"]::before{display:none!important}
   document.getElementById('boot-copy').onclick=()=>navigator.clipboard.writeText(safe(out.textContent)).then(()=>log('COPIED sanitized diagnostics')).catch(e=>log('COPY ERROR '+e.message));
   document.getElementById('setup-form')?.addEventListener('submit',()=>{setTimeout(()=>{const st=window.__CITY_DEMO_RUNTIME__?.snapshot?.();log('2.5s STATE cityRuntime='+!!window.__CITY_DEMO_RUNTIME__+' dispatchMode='+!!window.__DISPATCH_MODE_RUNTIME__+' picker='+!!st?.pickerActive+' city='+(st?.selectedCity||'none'));},2500)},true);
   log('Diagnostic logger armed BEFORE Cesium/modules; buttons, fetches, scripts, events and runtime errors will be recorded');
+  setTimeout(()=>{if(window.__CITY_DEMO_RUNTIME__)return;const street=document.getElementById('street-name'),road=document.getElementById('road-status');if(street)street.textContent='Simulator startup blocked';if(road)road.textContent='Open RUN DIAGNOSTICS for startup error';log('STARTUP ERROR: city driving runtime did not initialize within 20 seconds');},20000);
   })();
   </script>
   <script>
@@ -248,7 +249,7 @@ body[data-build="dispatch-prototype-v0.0.45"]::before{display:none!important}
       window.GOOGLE_TILESET_OPTIONS = Object.freeze({ showCreditsOnScreen: true });
     })();
   </script>
-  <script type="module" src="./app-dispatch-v0.0.45.js?v=0.0.45-r20260928c"></script>
+  <script type="module" src="./app-dispatch-v0.0.46.js?v=0.0.46-r20260928d"></script>
   <script src="./validation.js?v=0.0.8-r20260928a"></script>
 </body>
 </html>
