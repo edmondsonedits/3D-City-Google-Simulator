@@ -1,11 +1,11 @@
 // v0.0.44 completion-pass entry. Production index.html remains v0.0.8.
-await import('./app-dispatch-mode-v0.0.44.js?v=0.0.44');
-await import('./dispatch/dispatch-gameplay-v0.0.13.js?v=0.0.13');
-await import('./dispatch/incident-spatial-v0.0.14.js?v=0.0.14');
-await import('./dispatch/ems-transport-v0.0.15.js?v=0.0.15');
-await import('./dispatch/response-tablet-v0.0.16.js?v=0.0.16');
-await import('./dispatch/after-action-review-v0.0.17.js?v=0.0.17');
-await import('./dispatch/integration-polish-v0.0.18.js?v=0.0.18');
+await import('./app-dispatch-mode-v0.0.44.js?v=0.0.44-r20260928a');
+await import('./dispatch/dispatch-gameplay-v0.0.13.js?v=0.0.13-r20260928a');
+await import('./dispatch/incident-spatial-v0.0.14.js?v=0.0.14-r20260928a');
+await import('./dispatch/ems-transport-v0.0.15.js?v=0.0.15-r20260928a');
+await import('./dispatch/response-tablet-v0.0.16.js?v=0.0.16-r20260928a');
+await import('./dispatch/after-action-review-v0.0.17.js?v=0.0.17-r20260928a');
+await import('./dispatch/integration-polish-v0.0.18.js?v=0.0.18-r20260928a');
 const VERSION='0.0.44';
 document.querySelector('#version-pill')?.replaceChildren('v'+VERSION);
 document.documentElement.dataset.dispatchPrototypeVersion=VERSION;
