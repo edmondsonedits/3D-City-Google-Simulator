@@ -6,8 +6,8 @@ import {
   wrapAngle,
   advanceVehicle,
   roadAllowsFullSpeed,
-} from './logic.js?v=0.0.8';
-import { SurfaceAlignmentService } from './surface.js?v=0.0.8';
+} from './logic.js?v=0.0.8-r20260928a';
+import { SurfaceAlignmentService } from './surface.js?v=0.0.8-r20260928a';
 
 const VERSION = '0.0.44';
 const Cesium = window.Cesium;
