@@ -300,19 +300,45 @@ function buildRoadMatcher(geojson) {
   }};
 }
 
-async function loadRoadData() {
+async function fetchRoadDataResponse(url, timeoutMs = 15000) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const response = await fetch(ROAD_DATA_URL, { cache: 'force-cache', signal: AbortSignal.timeout(15000) });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    state.roadMatcher = buildRoadMatcher(await response.json());
-    if (!state.roadMatcher.segmentCount) throw new Error('Road file contains no usable segments');
-    state.roadDataStatus = `${state.roadMatcher.segmentCount.toLocaleString()} segments`;
-    if (state.trainingRoadsEnabled) dom.diagRoads.textContent = state.roadDataStatus;
-    return state.roadMatcher;
-  } catch (error) {
-    state.roadMatcher = null; state.roadDataStatus = 'Unavailable'; console.warn('Road data unavailable:', error);
-    dom.diagRoads.textContent = 'Unavailable — driving still works'; return null;
+    return await fetch(url, { cache: 'no-store', signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
   }
+}
+
+async function loadRoadData() {
+  state.roadDataStatus = 'Loading';
+  dom.diagRoads.textContent = 'Loading';
+  const roadUrl = new URL(ROAD_DATA_URL, import.meta.url);
+  roadUrl.searchParams.set('rev', 'r20260928b');
+  const attempts = [roadUrl.href, ROAD_DATA_URL];
+  let lastError = null;
+  for (const url of attempts) {
+    try {
+      const response = await fetchRoadDataResponse(url);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const matcher = buildRoadMatcher(await response.json());
+      if (!matcher.segmentCount) throw new Error('Road file contains no usable segments');
+      state.roadMatcher = matcher;
+      state.roadDataStatus = `${matcher.segmentCount.toLocaleString()} segments`;
+      if (state.trainingRoadsEnabled) dom.diagRoads.textContent = state.roadDataStatus;
+      window.__BOOT_RUN_LOG__?.(`ROAD DATA ready: ${state.roadDataStatus}`);
+      return matcher;
+    } catch (error) {
+      lastError = error;
+      window.__BOOT_RUN_LOG__?.(`ROAD DATA attempt failed: ${error?.name || 'Error'} ${error?.message || error}`);
+    }
+  }
+  state.roadMatcher = null;
+  state.roadDataStatus = 'Unavailable';
+  console.warn('Road data unavailable:', lastError);
+  dom.diagRoads.textContent = 'Unavailable — driving still works';
+  window.__BOOT_RUN_LOG__?.('ROAD DATA unavailable after retry');
+  return null;
 }
 const roadDataPromise = loadRoadData();
 
@@ -696,6 +722,12 @@ function updateHud(driveInput) {
     dom.roadStatus.className = `road-state ${onRoad ? 'on-road' : 'off-road'}`; dom.diagRoadDistance.textContent = `${state.roadMatch.distance.toFixed(1)} m`;
   } else if (state.roadMatcher) {
     dom.streetName.textContent = 'No nearby mapped street'; dom.roadStatus.textContent = 'Off road'; dom.roadStatus.className = 'road-state off-road'; dom.diagRoadDistance.textContent = '—';
+  } else {
+    const loading = state.roadDataStatus === 'Loading';
+    dom.streetName.textContent = loading ? 'Waiting for road data…' : 'Road data unavailable';
+    dom.roadStatus.textContent = loading ? 'Road data loading' : 'Street matching unavailable · driving still works';
+    dom.roadStatus.className = loading ? 'road-state' : 'road-state off-road';
+    dom.diagRoadDistance.textContent = '—';
   }
   if (state.tileset && !state.tileFailure) {
     const settled = Boolean(state.tileset.tilesLoaded); setStatus(dom.tilesStatus, settled ? '3D world: ready nearby' : '3D world: streaming', settled ? 'good' : 'warn');
