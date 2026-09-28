@@ -1,4 +1,4 @@
-import { peterboroughDataReady } from './dispatch/peterborough-data-adapter-v0.0.31.js?v=0.0.31';
+import { peterboroughDataReady } from './dispatch/peterborough-data-adapter-v0.0.31.js?v=0.0.31-r20260928a';
 
 const VERSION = '0.0.44';
 const data = await peterboroughDataReady;
@@ -6,7 +6,7 @@ window.DISPATCH_PROTOTYPE = Object.freeze({ version:VERSION, cityDataReady:Promi
 
 // v0.0.40 is the current proven Google/Cesium driving runtime; v0.0.44 changes
 // completion-test orchestration only, so the renderer/physics implementation is reused unchanged.
-await import('./app-dispatch-runtime-v0.0.44.js?v=0.0.44');
+await import('./app-dispatch-runtime-v0.0.44.js?v=0.0.44-r20260928a');
 
 document.documentElement.dataset.dispatchPrototypeData = 'ready';
 document.documentElement.dataset.dispatchPackageVersion = data.city.packageVersion;
