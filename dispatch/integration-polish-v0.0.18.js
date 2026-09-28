@@ -1,4 +1,4 @@
-import { peterboroughDataReady } from './peterborough-data-adapter-v0.0.10.js?v=0.0.10';
+import { peterboroughDataReady } from './peterborough-data-adapter-v0.0.10.js?v=0.0.10-r20260928a';
 
 const VERSION='0.0.18';
 const data=await peterboroughDataReady;
